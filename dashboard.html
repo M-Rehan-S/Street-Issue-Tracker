@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Street Issue Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}" />
+</head>
+ 
+<body>
+  <nav id="sidebar" data-page="dashboard"  data-username="{{session['username'] }}" data-role = "{{ session['role']}}"></nav>
+  <main id="main">
+
+    <div class="page-header">
+      <h2 class="page-title">Dashboard</h2>
+      <a href="{{url_for ('report_issue') }}" class="btn-primary"><i class="fas fa-plus"></i> Report Issue</a>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Reports</div>
+        <div class="stat-value" id="statTotal">—</div>
+        <div class="stat-sub">
+          <span class="s-fix" id="statFixed">0 Fixed</span>
+          <span class="stat-dot">·</span>
+          <span class="s-pend" id="statPending">0 Pending</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Open Issues</div>
+        <div class="stat-value s-open" id="statOpen">—</div>
+        <div class="stat-sub s-muted">Requires attention</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Resolution Rate</div>
+        <div class="stat-value s-fix" id="statRate">—</div>
+        <div class="stat-sub s-muted">Of all reports</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><i class="fas fa-clock"></i> Recent Report</div>
+      <div id="recentReport"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><i class="fas fa-fire"></i> Most Faced Problems</div>
+      <div id="slideshowContainer"></div>
+      <div class="slide-dots" id="slideDots"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title"><i class="fas fa-user"></i> Your Reports</div>
+      <div id="yourReports"></div>
+    </div>
+
+  </main>
+  <div id="toast"></div>
+  <script src="{{ url_for('static', filename='sidebar-template.js') }}"></script>
+  <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
+  <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+
+</html>

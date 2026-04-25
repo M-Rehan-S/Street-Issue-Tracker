@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Member — Street Issue Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='members.css') }}" />
+</head>
+
+<body>
+  <nav id="sidebar" data-page="add-member"
+       data-username="{{ session['username'] }}"
+       data-role="{{ session['role'] }}"></nav>
+
+  <main id="main">
+    <div class="page-header">
+      <h2 class="page-title">
+        <i class="fas fa-user-plus" style="color:var(--accent);margin-right:10px;"></i>Add Member
+      </h2>
+    </div>
+
+    <div class="card am-card">
+      <div class="section-title"><i class="fas fa-shield-halved"></i> Register Department Member</div>
+
+      <div class="form-grid">
+
+        <div class="form-group full">
+          <label>Username</label>
+          <input type="text" id="amUsername" placeholder="e.g. john_works" />
+        </div>
+
+        <div class="form-group full">
+          <label>CNIC</label>
+          <input type="text" id="amCNIC" placeholder="e.g. 42101-1234567-1" maxlength="15" />
+        </div>
+
+        <div class="form-group full">
+          <label>Department / Role</label>
+          <!-- Populated dynamically by members.js via /get-roles -->
+          <select id="amRole">
+            <option value="">Loading departments…</option>
+          </select>
+          <span class="roles-error" id="rolesError" style="display:none;">
+            <i class="fas fa-triangle-exclamation"></i> Could not load departments. Please refresh.
+          </span>
+        </div>
+
+        <div class="form-group full">
+          <label>Generated Passcode</label>
+          <div class="passcode-box">
+            <input type="text" id="amPasscode" readonly placeholder="Click Generate →" />
+            <button class="btn-gen" onclick="generatePasscode()">
+              <i class="fas fa-key"></i> Generate
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <hr class="form-divider" />
+
+      <div class="form-footer">
+        <button class="btn-submit" id="registerBtn" onclick="addMember()">
+          <i class="fas fa-user-check"></i> Register Member
+        </button>
+        <small style="color:var(--tm)">All fields are required</small>
+      </div>
+    </div>
+
+    <!-- Credentials reveal card -->
+    <div class="success-card" id="successCard">
+      <div class="success-title"><i class="fas fa-circle-check"></i> Member Registered Successfully</div>
+      <div class="cred-row">
+        <span class="cred-label">Username</span>
+        <span class="cred-val" id="scUsername">—</span>
+        <button class="copy-btn" onclick="copyText('scUsername')"><i class="fas fa-copy"></i> Copy</button>
+      </div>
+      <div class="cred-row">
+        <span class="cred-label">CNIC</span>
+        <span class="cred-val" id="scCNIC">—</span>
+      </div>
+      <div class="cred-row">
+        <span class="cred-label">Passcode</span>
+        <span class="cred-val" id="scPasscode">—</span>
+        <button class="copy-btn" onclick="copyText('scPasscode')"><i class="fas fa-copy"></i> Copy</button>
+      </div>
+      <div class="cred-row">
+        <span class="cred-label">Department</span>
+        <span class="cred-val" id="scRole">—</span>
+      </div>
+      <div class="warn-note">
+        <i class="fas fa-triangle-exclamation"></i>
+        Share these credentials with the member securely. The passcode will not be shown again.
+      </div>
+    </div>
+
+  </main>
+
+  <div id="toast"></div>
+  <script src="{{ url_for('static', filename='sidebar-template.js') }}"></script>
+  <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
+  <script src="{{ url_for('static', filename='members.js') }}"></script>
+</body>
+</html>

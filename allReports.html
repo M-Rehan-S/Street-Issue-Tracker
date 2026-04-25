@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All Reports — Street Issue Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='allReports.css') }}"/>
+</head>
+ 
+<body>
+  <nav id="sidebar" data-page="all-reports"  data-username="{{session['username'] }}"  data-role = "{{ session['role']}}" ></nav>
+  <main id="main">
+
+    <div class="page-header">
+      <h2 class="page-title">All Reports</h2>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="card filter-bar">
+      <span class="filter-label"><i class="fas fa-sliders"></i> Filter by</span>
+
+      <div class="filter-group">
+        <label>Category</label>
+        <select id="filterCategory" onchange="applyFilters()">
+          <option value="">All Categories</option>
+          <option>Pothole</option>
+          <option>Broken Streetlight</option>
+          <option>Garbage Overflow</option>
+          <option>Water Leakage</option>
+          <option>Damaged Pavement</option>
+          <option>Illegal Parking</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Status</label>
+        <select id="filterStatus" onchange="applyFilters()">
+          <option value="">All Statuses</option>
+          <option>Open</option>
+          <option>Pending</option>
+        </select>
+      </div>
+
+      <button class="btn-clear" onclick="clearFilters()">
+        <i class="fas fa-rotate-left"></i> Clear
+      </button>
+    </div>
+
+    <p class="results-meta" id="resultsMeta"></p>
+    <div class="reports-grid" id="reportsGrid"></div>
+
+  </main>
+
+  <!-- ══════ DETAIL DRAWER ══════ -->
+  <div class="detail-overlay" id="detailOverlay" onclick="closeDetail(event)">
+    <div class="detail-drawer" id="detailDrawer">
+      <button class="drawer-close" onclick="closeDetailDirect()"><i class="fas fa-times"></i></button>
+
+      <div class="drawer-img-wrap" id="drawerImgWrap"></div>
+
+      <div class="drawer-header">
+        <div class="drawer-title-row">
+          <div>
+            <h3 class="drawer-title" id="drawerTitle">—</h3>
+            <div class="drawer-location" id="drawerLocation"><i class="fas fa-location-dot"></i> —</div>
+          </div>
+          <span id="drawerBadge"></span>
+        </div>
+      </div>
+
+      <div class="drawer-body">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label"><i class="fas fa-user"></i> Reported By</div>
+            <div class="detail-val" id="drawerReporter">—</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label"><i class="fas fa-calendar-days"></i> Date Reported</div>
+            <div class="detail-val" id="drawerDate">—</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label"><i class="fas fa-layer-group"></i> Category</div>
+            <div class="detail-val" id="drawerCategory">—</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label"><i class="fas fa-fire"></i> Priority</div>
+            <div class="detail-val" id="drawerPriority">—</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label"><i class="fas fa-thumbs-up"></i> Community Support</div>
+            <div class="detail-val" id="drawerLikes">—</div>
+          </div>
+        </div>
+
+        <div class="drawer-desc-label">Description</div>
+        <div class="drawer-desc" id="drawerDesc">—</div>
+      </div>
+
+      <hr class="drawer-divider" />
+
+      <div class="drawer-like-section">
+        <button class="like-btn like-btn-full" id="drawerLikeBtn" onclick="drawerToggleLike()">
+          <i class="fas fa-thumbs-up"></i>
+          <span id="drawerLikeLabel">I face this issue too</span>
+        </button>
+      </div>
+
+      <!-- Admin / Dept controls -->
+      <div class="drawer-admin-section" id="drawerAdminSection" style="display:none">
+        <div class="admin-section-title">
+          <i class="fas fa-shield-halved"></i>
+          <span id="adminSectionLabel">Admin Controls</span>
+        </div>
+
+        <div class="workflow-label">Change Status</div>
+        <div class="workflow-btns">
+          <button class="wf-btn wf-open" onclick="setStatusFromDrawer('Open')"><i class="fas fa-circle-exclamation"></i>
+            Open</button>
+          <button class="wf-btn wf-pending" onclick="setStatusFromDrawer('Pending')"><i class="fas fa-clock"></i> In
+            Progress</button>
+          <button class="wf-btn wf-fixed" onclick="setStatusFromDrawer('Fixed')"><i class="fas fa-circle-check"></i>
+            Mark as Fixed</button>
+        </div>
+
+        <div class="proof-section" id="proofSection" style="display:none">
+          <div class="proof-label">
+            <i class="fas fa-camera"></i> Upload Proof of Resolution
+            <span class="proof-required">Required</span>
+          </div>
+          <div class="proof-upload-area" onclick="document.getElementById('proofInput').click()">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <p id="proofUploadLabel">Click to upload after-photo</p>
+            <small>PNG, JPG — clearly shows the fix</small>
+          </div>
+          <input type="file" id="proofInput" accept="image/*" style="display:none" onchange="handleProofUpload(this)" />
+          <div id="proofPreview" class="proof-preview" style="display:none">
+            <img id="proofPreviewImg" src="" alt="Proof" />
+            <button class="remove-proof" onclick="removeProof()"><i class="fas fa-times"></i></button>
+          </div>
+          <button class="btn-confirm-fixed" onclick="confirmFixed()">
+            <i class="fas fa-check-circle"></i> Confirm & Mark as Fixed
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <script src="{{ url_for('static', filename='sidebar-template.js') }}"></script>
+  <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
+  <script src="{{ url_for('static', filename='allreports.js') }}"></script>
+</body>
+
+</html>

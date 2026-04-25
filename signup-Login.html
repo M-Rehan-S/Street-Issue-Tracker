@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Street Issue Tracker - CrowdSourced</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='signup-Login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='navcss.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='footer.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+ 
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <span class="header "> <i class="fas fa-road" style="color: #fa7516;"></i></span>
+            <h1>Street Issue Tracker</h1>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="sign-up-btn"><span class="fas fa-user-plus"></span> Sign Up</a>
+        </div>
+        <div class="aside">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+    <main>
+        <div class="main-port">
+            <div class="container">
+                <div class="auth-container">
+                    <div class="panels-container">
+                        <div class="panel left-panel">
+                            <div class="content">
+                                <h1 class="welcome-heading">WELCOME BACK TO STREET ISSUE TRACKER!</h1>
+                                <p class="welcome-message">Making every road safer, one report at a time.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="forms-container">
+                        <div class="signin-signup">
+                            <form action="/login" method="POST" class="sign-in-form">
+                                <h2>Login</h2>
+                                <div class="input-field">
+                                    <i class="fas fa-user"></i>
+                                    <input type="text" name = "username" placeholder="Username" />
+                                </div>
+                                <div class="input-field">
+                                    <i class="fas fa-lock"></i>
+                                    <input type="password"  name = "password" placeholder="Password" />
+                                </div>
+                                <button type="submit" class="btn">Login</button>
+                                <p class="social-text">Don't have an account? <a href="#" class="toggle-form">Sign
+                                        up</a></p>
+                            </form>
+                            <form action="/register" method="POST" class="sign-up-form">
+                                <h2>Sign Up</h2>
+                                <div class="input-field">
+                                    <i class="fas fa-user"></i>
+                                    <input type="text" name = "username" placeholder="Username" />
+                                </div>
+                                <div class="input-field">
+                                    <i class="fas fa-envelope"></i>
+                                    <input type="text" name = "CNIC" placeholder="CNIC" />
+                                </div>
+                                <div class="input-field">
+                                    <i class="fas fa-lock"></i>
+                                    <input type="password" name = "password" placeholder="Password" />
+                                </div>
+                                <button type="submit" class="btn">Sign up</button>
+                                <p class="social-text">Already have an account? <a href="#"
+                                        class="toggle-form">Login</a></p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Information</h3>
+                <ul>
+                    <li><span class="fas fa-phone"></span> +92 300 6842511</li>
+                    <li><span class="fas fa-phone"></span> +92 332 3354785</li>
+                    <li><span class="fas fa-phone"></span> +92 319 9435002</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Delivery Countries</h3>
+                <ul>
+                    <li><span class="fas fa-map-marker-alt"></span> Islamabad</li>
+                    <li><span class="fas fa-map-marker-alt"></span> Karachi</li>
+                    <li><span class="fas fa-map-marker-alt"></span> Lahore</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Connect With Us</h3>
+                <div class="social-links">
+                    <a href="#"><span class="fab fa-instagram"></span></a>
+                    <a href="#"><span class="fab fa-facebook"></span></a>
+                    <a href="#"><span class="fab fa-twitter"></span></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Street Issue Tracker. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="{{ url_for('static', filename='responsive.js') }}"></script>
+    <script src="{{ url_for('static', filename='signup-login.js') }}"></script>
+</body>
+
+</html>

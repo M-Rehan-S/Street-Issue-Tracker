@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community Board — Street Issue Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='leaderboard.css') }}" />
+</head>
+ 
+<body>
+    <nav id="sidebar" data-page="leaderboard" data-username="{{session['username'] }}" data-role = "{{ session['role']}}"></nav>
+    <main id="main">
+
+        <div class="page-header">
+            <h2 class="page-title">Community Board</h2>
+        </div>
+
+        <div class="card intro-card">
+            <i class="fas fa-trophy intro-icon"></i>
+            <div>
+                <p class="intro-title">Top Reporters</p>
+                <p class="intro-sub">Points are awarded for each verified, fixed issue reported by the community.</p>
+            </div>
+        </div>
+
+        <div class="exchange-list" id="exchangeList"></div>
+
+    </main>
+    <div id="toast"></div>
+    <script src="{{ url_for('static', filename='sidebar-template.js') }}"></script>
+    <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
+    <script src="{{ url_for('static', filename='leaderboard.js') }}"></script>
+</body>
+
+</html>

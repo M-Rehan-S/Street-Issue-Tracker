@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings — Street Issue Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='settings.css') }}" />
+</head>
+ 
+<body>
+    <nav id="sidebar" data-page="settings" data-username="{{ session['username'] }}" data-role="{{ session['role'] }}"></nav>
+    <main id="main">
+
+        <div class="page-header">
+            <h2 class="page-title">Settings</h2>
+        </div>
+
+        <div class="card">
+
+            <!-- Notifications -->
+            <div class="settings-section">
+                <h3 class="settings-h3">Notifications</h3>
+                <div class="toggle-row border-bottom">
+                    <div>
+                        <div class="t-label">Email Notifications</div>
+                        <div class="t-desc">Get updates when your report status changes</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked />
+                        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <div>
+                        <div class="t-label">New Issue Alerts</div>
+                        <div class="t-desc">Notify me of new issues in my area</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" />
+                        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Privacy -->
+            <div class="settings-section">
+                <h3 class="settings-h3">Privacy</h3>
+                <div class="toggle-row border-bottom">
+                    <div>
+                        <div class="t-label">Show Profile Publicly</div>
+                        <div class="t-desc">Your name appears on submitted reports</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked />
+                        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                    </label>
+                </div>
+                <div class="toggle-row">
+                    <div>
+                        <div class="t-label">Allow Location Tracking</div>
+                        <div class="t-desc">Used to auto-fill location when reporting</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" />
+                        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Account -->
+            <div class="settings-section last">
+                <h3 class="settings-h3">Account</h3>
+                <div class="settings-actions">
+                    <!-- NEW: Update Personal Details button -->
+                    <button class="btn-update-details" onclick="openDetailsModel()">
+                        <i class="fas fa-user-pen"></i> Update Personal Details
+                    </button>
+                    <button class="btn-danger" onclick="confirmReset()">
+                        <i class="fas fa-trash"></i> Clear My Data
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ══════ UPDATE PERSONAL DETAILS MODAL ══════ -->
+    <div class="pd-overlay" id="pdOverlay" onclick="closeDetailsModel(event)">
+        <div class="pd-modal">
+
+            <div class="pd-modal-header">
+                <div>
+                    <h3 class="pd-modal-title"><i class="fas fa-user-pen"></i> Update Personal Details</h3>
+                    <p class="pd-modal-sub">Fill only the fields you want to change. At least one is required.</p>
+                </div>
+                <button class="pd-close-btn" onclick="closeDetailsModelDirect()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="pd-form-grid">
+
+                <div class="pd-form-group">
+                    <label><i class="fas fa-user"></i> New Username</label>
+                    <input type="text" id="pdUsername" placeholder="Leave blank to keep current" />
+                </div>
+
+                <div class="pd-form-group">
+                    <label><i class="fas fa-phone"></i> Phone Number</label>
+                    <input type="tel" id="pdPhone" placeholder="+92 300 0000000" />
+                </div>
+
+                <div class="pd-form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="pdEmail" placeholder="you@example.com" />
+                </div>
+
+                <div class="pd-form-group">
+                    <!-- spacer for grid alignment -->
+                </div>
+
+                <div class="pd-form-group pd-divider-group">
+                    <div class="pd-divider-label">
+                        <i class="fas fa-lock"></i> Change Password
+                        <span class="pd-optional-tag">Optional</span>
+                    </div>
+                </div>
+
+                <div class="pd-form-group pd-full">
+                    <label>New Password</label>
+                    <div class="pd-input-wrap">
+                        <input type="password" id="pdPassword" placeholder="Leave blank to keep current" />
+                        <button class="pd-eye-btn" type="button" onclick="togglePwd('pdPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pd-form-group pd-full">
+                    <label>Confirm New Password</label>
+                    <div class="pd-input-wrap">
+                        <input type="password" id="pdConfirmPassword" placeholder="Repeat new password" />
+                        <button class="pd-eye-btn" type="button" onclick="togglePwd('pdConfirmPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="pd-match-hint" id="pdMatchHint"></div>
+                </div>
+
+            </div>
+
+            <div class="pd-modal-footer">
+                <button class="pd-btn-cancel" onclick="closeDetailsModelDirect()">Cancel</button>
+                <button class="pd-btn-save" onclick="submitPersonalDetails()">
+                    <i class="fas fa-floppy-disk"></i> Save Changes
+                </button>
+            </div>
+
+        </div>
+    </div>
+    <!-- ══════════════════════════════════════════ -->
+
+    <div id="toast"></div>
+    <script src="{{ url_for('static', filename='sidebar-template.js') }}"></script>
+    <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
+    <script src="{{ url_for('static', filename='settings.js') }}"></script>
+</body>
+
+</html>

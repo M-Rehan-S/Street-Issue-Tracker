@@ -1,0 +1,126 @@
+/* leaderboard.css */
+.intro-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.intro-icon {
+    font-size: 28px;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.intro-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.intro-sub {
+    font-size: 13px;
+    color: var(--tm);
+    margin: 0;
+}
+
+.exchange-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.exchange-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--rad);
+    padding: 16px 20px;
+    transition: border-color 0.2s, transform 0.15s;
+}
+
+.exchange-item:hover {
+    border-color: rgba(249, 115, 22, 0.3);
+    transform: translateX(3px);
+}
+
+.exchange-item.rank-1 {
+    border-left: 3px solid #f59e0b;
+}
+
+.exchange-item.rank-2 {
+    border-left: 3px solid #9ca3af;
+}
+
+.exchange-item.rank-3 {
+    border-left: 3px solid #cd7c2f;
+}
+
+.ex-rank {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--accent);
+    width: 34px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.exchange-item.rank-1 .ex-rank {
+    color: #f59e0b;
+}
+
+.exchange-item.rank-2 .ex-rank {
+    color: #9ca3af;
+}
+
+.exchange-item.rank-3 .ex-rank {
+    color: #cd7c2f;
+}
+
+.ex-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #c2410c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.ex-info {
+    flex: 1;
+}
+
+.ex-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.ex-sub {
+    font-size: 12px;
+    color: var(--tm);
+    margin-top: 2px;
+}
+
+.ex-pts-wrap {
+    text-align: right;
+}
+
+.ex-pts {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--accent);
+}
+
+.ex-pts-label {
+    font-size: 11px;
+    color: var(--tm);
+}
