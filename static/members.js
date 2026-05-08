@@ -1,9 +1,9 @@
 async function loadRoles() {
-  const select    = document.getElementById('amRole');
+  const select = document.getElementById('amRole');
   const errorSpan = document.getElementById('rolesError');
 
   try {
-    const res  = await fetch('/get-roles');
+    const res = await fetch('/get-roles');
     const data = await res.json();
 
     if (!data.success || !data.roles || data.roles.length === 0) {
@@ -14,9 +14,9 @@ async function loadRoles() {
 
     select.innerHTML = '<option value="">Select department</option>';
     data.roles.forEach(role => {
-      const opt       = document.createElement('option');
-      opt.value       = role.id;    
-      opt.textContent = role.name;  
+      const opt = document.createElement('option');
+      opt.value = role.id;
+      opt.textContent = role.name;
       select.appendChild(opt);
     });
 
@@ -36,29 +36,30 @@ function generatePasscode() {
 }
 
 async function addMember() {
-  const username   = document.getElementById('amUsername').value.trim();
-  const cnic       = document.getElementById('amCNIC').value.trim();
+  const username = document.getElementById('amUsername').value.trim();
+  const cnic = document.getElementById('amCNIC').value.trim();
   const roleSelect = document.getElementById('amRole');
-  const roleId     = roleSelect.value;                                      
-  const roleName   = roleSelect.options[roleSelect.selectedIndex].text;     
-  const passcode   = document.getElementById('amPasscode').value.trim();
-  const email      = document.getElementById('amEmail').value.trim();
-  const phoneNo    = document.getElementById('amPhoneNo').value.trim();
+  const roleId = roleSelect.value;
+  const roleName = roleSelect.options[roleSelect.selectedIndex].text;
+  const passcode = document.getElementById('amPasscode').value.trim();
+  const email = document.getElementById('amEmail').value.trim();
+  const phoneNo = document.getElementById('amPhoneNo').value.trim();
 
-  if (!username) { showToast('Please enter a Username.',          '#f87171'); return; }
-  if (!cnic)     { showToast('Please enter the CNIC.',            '#f87171'); return; }
-  if (!roleId)   { showToast('Please select a Department.',       '#f87171'); return; }
+  console.log({ username, cnic, roleId, passcode, email, phoneNo });
+  if (!username) { showToast('Please enter a Username.', '#f87171'); return; }
+  if (!cnic) { showToast('Please enter the CNIC.', '#f87171'); return; }
+  if (!roleId) { showToast('Please select a Department.', '#f87171'); return; }
   if (!passcode) { showToast('Please generate a Passcode first.', '#f87171'); return; }
-  if (!email)    { showToast('Please enter a Email',              '#f87171'); return; }
-  if (!phoneNo)  { showToast('Please enter a Phone Number',       '#f87171'); return; }
+  if (!email) { showToast('Please enter a Email', '#f87171'); return; }
+  if (!phoneNo) { showToast('Please enter a Phone Number', '#f87171'); return; }
 
   const btn = document.getElementById('registerBtn');
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering…';
 
   try {
-    const res  = await fetch('/add-member', {
-      method:  'POST',
+    const res = await fetch('/add-member', {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, cnic, role_id: roleId, passcode, email, phoneNo })
     });
@@ -68,17 +69,17 @@ async function addMember() {
       showToast('Member registered successfully!');
 
       document.getElementById('scUsername').textContent = username;
-      document.getElementById('scCNIC').textContent     = cnic;
+      document.getElementById('scCNIC').textContent = cnic;
       document.getElementById('scPasscode').textContent = passcode;
-      document.getElementById('scRole').textContent     = roleName;
-      document.getElementById('scEmail').textContent    = email;
-      document.getElementById('scPhone').textContent    = phoneNo
+      document.getElementById('scRole').textContent = roleName;
+      document.getElementById('scEmail').textContent = email;
+      document.getElementById('scPhone').textContent = phoneNo
       document.getElementById('successCard').classList.add('show');
 
       /* Reset form */
       document.getElementById('amUsername').value = '';
-      document.getElementById('amCNIC').value     = '';
-      document.getElementById('amRole').value     = '';
+      document.getElementById('amCNIC').value = '';
+      document.getElementById('amRole').value = '';
       document.getElementById('amPasscode').value = '';
       document.getElementById('amEmail').value = '';
       document.getElementById('amPhoneNo').value = '';
@@ -101,7 +102,7 @@ function copyText(id) {
 
 function showToast(msg, color) {
   const t = document.getElementById('toast');
-  t.textContent      = msg;
+  t.textContent = msg;
   t.style.background = color || '#22c55e';
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);

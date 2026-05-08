@@ -1,22 +1,28 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_mysqldb import MySQL
+import os
+from flask import Flask, render_template
 
-app = Flask(__name__, template_folder='Template', static_folder='static')
+
+# This tells Flask to look for templates relative to THIS file's location (for venv)
+base_dir = os.path.abspath(os.path.dirname(__file__))
+app = Flask(__name__, template_folder=os.path.join(base_dir, 'templates'))
 app.secret_key = "secret_key_for_session"
 
 # Database Configuration
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Ariz2302'
+app.config['MYSQL_PASSWORD'] = 'rehan2006'
 app.config['MYSQL_DB'] = 'StreetIssueTracker'
 
 mysql = MySQL(app)
 
 # --- AUTHENTICATION ROUTES ---
 
+
 @app.route('/')
 def home():
-    return render_template('signup-Login.html')
+    return render_template('signup-login.html')
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -206,42 +212,44 @@ def add_member():
     if request.method == 'GET':
         return render_template('members.html')
 
+    
     # POST — register the new member
-    try:
-        data     = request.get_json()
-        username = data.get('username', '').strip()
-        cnic     = data.get('cnic', '').strip()
-        role_id  = data.get('role_id', '').strip()
-        passcode = data.get('passcode', '').strip()
-        email    = data.get('email', '').strip()
-        phone    = data.get('phoneNo', '').strip()
+    if request.method == 'POST':
+        try:
+            data     = request.get_json()
+            username = data.get('username', '').strip()
+            cnic     = data.get('cnic', '').strip()
+            role_id  = data.get('role_id', '').strip()
+            passcode = data.get('passcode', '').strip()
+            email    = data.get('email', '').strip()
+            phone    = data.get('phoneNo', '').strip()
 
-        if not all([username, cnic, role_id, passcode, email, phone]):
-            return jsonify({'success': False, 'error': 'All fields are required.'})
+            if not all([username, cnic, role_id, passcode, email, phone]):
+                return jsonify({'success': False, 'error': 'All fields are required.'})
 
-        cur = mysql.connection.cursor()
+            cur = mysql.connection.cursor()
 
-        cur.execute("SELECT UID FROM Users WHERE Username = %s OR CNIC = %s", (username, cnic))
-        if cur.fetchone():
-            cur.close()
-            return jsonify({'success': False, 'error': 'Username or CNIC already exists.'})
-        cur2 = mysql.connection.cursor()
-        cur2.execute("SELECT RID FROM Role WHERE RID = %s", (role_id,))
-        if not cur2.fetchone():
+            cur.execute("SELECT UID FROM Users WHERE Username = %s OR CNIC = %s", (username, cnic))
+            if cur.fetchone():
+                cur.close()
+                return jsonify({'success': False, 'error': 'Username or CNIC already exists.'})
+            cur2 = mysql.connection.cursor()
+            cur2.execute("SELECT RID FROM Role WHERE RID = %s", (role_id,))
+            if not cur2.fetchone():
+                cur2.close()
+                cur.close()
+                return jsonify({'success': False, 'error': 'Selected department does not exist.'})
             cur2.close()
+            cur.execute(
+                "INSERT INTO Users(Username, Password, CNIC, Email, Phone_Number, RID) VALUES(%s, %s, %s, %s, %s, %s)",
+                (username, passcode, cnic, email, phone, role_id)
+            )
+            mysql.connection.commit()
             cur.close()
-            return jsonify({'success': False, 'error': 'Selected department does not exist.'})
-        cur2.close()
-        cur.execute(
-            "INSERT INTO Users(Username, Password, CNIC, Email, Phone_Number, RID) VALUES(%s, %s, %s, %s, %s, %s)",
-            (username, passcode, cnic, email, phone, role_id)
-        )
-        mysql.connection.commit()
-        cur.close()
-        return jsonify({'success': True})
+            return jsonify({'success': True})
 
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)})
+        except Exception as e:
+            return jsonify({'success': False, 'error': str(e)})
 
 
 if __name__ == '__main__':
