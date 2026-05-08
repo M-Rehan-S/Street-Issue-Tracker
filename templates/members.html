@@ -37,9 +37,18 @@
           <input type="text" id="amCNIC" placeholder="e.g. 42101-1234567-1" maxlength="15" />
         </div>
 
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="amEmail" placeholder="e.g. name@gmail.com" maxlength="100" />
+        </div>
+
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="amPhoneNo" placeholder="e.g. 0321-1234567" maxlength="12" />
+        </div>
+
         <div class="form-group full">
           <label>Department / Role</label>
-          <!-- Populated dynamically by members.js via /get-roles -->
           <select id="amRole">
             <option value="">Loading departments…</option>
           </select>
@@ -73,14 +82,11 @@
     <!-- Credentials reveal card -->
     <div class="success-card" id="successCard">
       <div class="success-title"><i class="fas fa-circle-check"></i> Member Registered Successfully</div>
+
       <div class="cred-row">
         <span class="cred-label">Username</span>
         <span class="cred-val" id="scUsername">—</span>
         <button class="copy-btn" onclick="copyText('scUsername')"><i class="fas fa-copy"></i> Copy</button>
-      </div>
-      <div class="cred-row">
-        <span class="cred-label">CNIC</span>
-        <span class="cred-val" id="scCNIC">—</span>
       </div>
       <div class="cred-row">
         <span class="cred-label">Passcode</span>
@@ -88,9 +94,22 @@
         <button class="copy-btn" onclick="copyText('scPasscode')"><i class="fas fa-copy"></i> Copy</button>
       </div>
       <div class="cred-row">
+        <span class="cred-label">CNIC</span>
+        <span class="cred-val" id="scCNIC">—</span>
+      </div>
+      <div class="cred-row">
+        <span class="cred-label">Email</span>
+        <span class="cred-val" id="scEmail">—</span>
+      </div>
+      <div class="cred-row">
+        <span class="cred-label">Phone Number</span>
+        <span class="cred-val" id="scPhone">—</span>
+      </div>
+      <div class="cred-row">
         <span class="cred-label">Department</span>
         <span class="cred-val" id="scRole">—</span>
       </div>
+
       <div class="warn-note">
         <i class="fas fa-triangle-exclamation"></i>
         Share these credentials with the member securely. The passcode will not be shown again.
@@ -104,4 +123,5 @@
   <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
   <script src="{{ url_for('static', filename='members.js') }}"></script>
 </body>
+
 </html>
