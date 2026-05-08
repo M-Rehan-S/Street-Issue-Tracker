@@ -1,6 +1,7 @@
 /* sidebar-template.js */
 
 function getSidebarHTML(activePage, role) {
+  const isSuperAdmin  = (role || '').toLowerCase() === 'super admin'
   const isAdmin = (role || '').toLowerCase() === 'admin';
 
   return `
@@ -25,7 +26,7 @@ function getSidebarHTML(activePage, role) {
       <a href="/leaderboard" ${activePage === 'leaderboard' ? 'class="active"' : ''}>
         <i class="fas fa-trophy"></i> Community Board
       </a>
-      ${isAdmin ? `
+      ${isSuperAdmin ? `
       <a href="/add-member" ${activePage === 'add-member' ? 'class="active"' : ''}>
         <i class="fas fa-user-plus"></i> Add Member
       </a>` : ''}
