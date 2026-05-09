@@ -61,7 +61,7 @@ def register():
         mysql.connection.commit()
         cur.close()
         cur2=mysql.connection.cursor()
-        cur2.execute("SELECT UID, R_Name, Username  FROM users u INNER JOIN role r ON r.RID = u.RID WHERE Username = %s",(username,))
+        cur2.execute("SELECT UID, R_Name, Username  FROM Users u INNER JOIN Role r ON r.RID = u.RID WHERE Username = %s",(username,))
         info=cur2.fetchone()
         cur2.close()
         session['logged_in'] = True
@@ -71,8 +71,9 @@ def register():
         flash("Account created! Now try logging in.")
 
     except Exception as e:
+        print(f"DEBUG ERROR: {e}")
         flash(f"Database Error: {str(e)}")
-        
+    print("Registration attempt for username: " + username)
     return redirect(url_for('dashboard'))
 
 @app.route('/login', methods=['POST'])
