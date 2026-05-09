@@ -11,7 +11,7 @@
 </head>
 
 <body>
-    <nav id="sidebar" data-page="report"  data-username="{{session['username'] }}" data-role = "{{ session['role']}}"></nav>
+    <nav id="sidebar" data-page="report" data-username="{{ session['username'] }}" data-role="{{ session['role'] }}"></nav>
     <main id="main">
 
         <div class="page-header">
@@ -39,7 +39,7 @@
                         <option>Other</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Date Observed</label>
                     <input type="date" id="repDate" />
@@ -53,17 +53,30 @@
 
                 <div class="form-group full">
                     <label>Upload Photo</label>
-                    <div class="upload-area" onclick="document.getElementById('repImage').click()">
+
+                    <!-- Upload area — hidden once image is chosen -->
+                    <div class="upload-area" id="uploadArea"
+                         onclick="document.getElementById('repImage').click()">
                         <i class="fas fa-cloud-arrow-up"></i>
                         <p id="uploadLabel">Click to upload an image</p>
                         <small>PNG, JPG up to 10MB</small>
                     </div>
+
                     <input type="file" id="repImage" accept="image/*" style="display:none"
-                        onchange="handleUpload(this)" />
+                           onchange="handleUpload(this)" />
+
+                    <!-- Thumbnail pill — shown after image chosen, hidden by default -->
                     <div id="imagePreview" class="image-preview" style="display:none">
                         <img id="previewImg" src="" alt="Preview" />
-                        <button class="remove-img" onclick="removeImage()"><i class="fas fa-times"></i></button>
+                        <div>
+                            <div class="preview-filename" id="previewFilename"></div>
+                            <div class="preview-filesize"  id="previewFilesize"></div>
+                        </div>
+                        <button class="remove-img" onclick="removeImage()">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
+
                 </div>
 
             </div>
@@ -76,13 +89,13 @@
                 <small style="color:var(--tm)">Location and Category are required</small>
             </div>
         </div>
- 
+
     </main>
     <div id="toast"></div>
     <script src="{{ url_for('static', filename='sidebar-template.js') }}"></script>
     <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
     <script src="{{ url_for('static', filename='reports.js') }}"></script>
-      <script src="{{ url_for('static', filename='include.js') }}"></script>
+    <script src="{{ url_for('static', filename='include.js') }}"></script>
 </body>
 
 </html>
