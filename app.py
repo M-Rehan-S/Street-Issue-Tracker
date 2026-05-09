@@ -202,25 +202,19 @@ def report():
         image = request.files.get('image')
         img = Image.open(image.stream).convert('RGB')
     
-        # 2. Preprocess (Must match your Training exactly!)
         img = img.resize((224, 224))
-        img_array = np.array(img) / 255.0  # Normalization
-        img_array = np.expand_dims(img_array, axis=0) # Make it (1, 224, 224, 3)
+        img_array = np.array(img) / 255.0  # Normalizing it in the 0-1 range for model
+        img_array = np.expand_dims(img_array, axis=0) 
         
-        # Ensure img_array is float32 (TFLite is strict about this)
         img_array = img_array.astype(np.float32)
 
-        # 4. Set the input tensor
         interpreter.set_tensor(input_details[0]['index'], img_array)
 
-        # 5. Run the inference
         interpreter.invoke()
 
-        # 6. Get the result
         prediction = interpreter.get_tensor(output_details[0]['index'])
         probability = float(prediction[0][0])
         
-        # 4. Logic for the result
         label = "Pothole" if probability > 0.5 else "Normal"
         confidence = round(probability * 100, 2) if label == "Pothole" else round((1-probability) * 100, 2)
         
