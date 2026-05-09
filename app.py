@@ -2,12 +2,28 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_mysqldb import MySQL
 import os
 from flask import Flask, render_template
+import numpy as np
+from PIL import Image
+import tensorflow as tf
+from flask_cors import CORS
 
 
 # This tells Flask to look for templates relative to THIS file's location (for venv)
 base_dir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__, template_folder=os.path.join(base_dir, 'templates'))
 app.secret_key = "secret_key_for_session"
+CORS(app)
+
+# 1. Path to your model
+model_path = os.path.join(base_dir, 'model/model.tflite')
+
+# 2. Load the TFLite model and allocate tensors
+interpreter = tf.lite.Interpreter(model_path=model_path)
+interpreter.allocate_tensors()
+
+# 3. Get input and output details (these tell the code where to "plug in" the image)
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
 
 # Database Configuration
 app.config['MYSQL_HOST'] = 'localhost'
@@ -176,6 +192,42 @@ def settings():
     if not session.get('logged_in'):
         return redirect(url_for('home'))
     return render_template('settings.html')
+
+@app.route('/report', methods = ['POST'])
+def report():
+    if not session.get('logged_in'):
+        return jsonify({'success': False, 'error': 'Not logged in.'})
+    
+    try:
+        image = request.files.get('image')
+        img = Image.open(image.stream).convert('RGB')
+    
+        # 2. Preprocess (Must match your Training exactly!)
+        img = img.resize((224, 224))
+        img_array = np.array(img) / 255.0  # Normalization
+        img_array = np.expand_dims(img_array, axis=0) # Make it (1, 224, 224, 3)
+        
+        # Ensure img_array is float32 (TFLite is strict about this)
+        img_array = img_array.astype(np.float32)
+
+        # 4. Set the input tensor
+        interpreter.set_tensor(input_details[0]['index'], img_array)
+
+        # 5. Run the inference
+        interpreter.invoke()
+
+        # 6. Get the result
+        prediction = interpreter.get_tensor(output_details[0]['index'])
+        probability = float(prediction[0][0])
+        
+        # 4. Logic for the result
+        label = "Pothole" if probability > 0.5 else "Normal"
+        confidence = round(probability * 100, 2) if label == "Pothole" else round((1-probability) * 100, 2)
+        
+        return jsonify({'success': True, 'label': label, 'confidence': confidence})
+
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})    
 
 
 # --- ADMIN-ONLY ROUTES ---

@@ -2,3 +2,8 @@ Flask
 Flask-SQLAlchemy
 PyMySQL
 flask-mysqldb
+tensorflow-cpu
+pillow
+numpy
+gunicorn
+flask-cors

@@ -16,6 +16,7 @@ function issueHtml(r) {
 }
 
 async function loadDashboard() {
+    const API = "http://127.0.0.1:5000";
     try {
         const res = await fetch(API + '/dashboard');
         const d = await res.json();

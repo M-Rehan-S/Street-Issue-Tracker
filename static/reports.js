@@ -36,11 +36,11 @@ async function submitReport() {
         showToast('Please fill in Location and Category.', '#f87171');
         return;
     }
-    else if(!category)  {
+    else if (!category) {
         showToast('Please fill in Category.', '#f57171');
         return;
     }
-    if(!imgFile){
+    if (!imgFile) {
         showToast('Please add an image.', '#f87171');
         return;
     }
@@ -51,11 +51,16 @@ async function submitReport() {
     formData.append('date', date);
     formData.append('description', desc);
     if (imgFile) formData.append('image', imgFile);
-
+    
+    const API = "http://127.0.0.1:5000";
+    
     try {
         const res = await fetch(API + '/report', { method: 'POST', body: formData });
         const data = await res.json();
-        if (data.success) {
+
+        console.log(data);// Debug log to check response from model
+
+        if (data.success && data.label == 'Pothole') {
             showToast('Report submitted successfully! 🎉');
             // Reset form
             document.getElementById('repLocation').value = '';
