@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_mysqldb import MySQL
 import os
-from flask import Flask, render_template
 import numpy as np
 from PIL import Image
 import tensorflow as tf

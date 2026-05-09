@@ -51,9 +51,9 @@ async function submitReport() {
     formData.append('date', date);
     formData.append('description', desc);
     if (imgFile) formData.append('image', imgFile);
-    
-    const API = "http://127.0.0.1:5000";
-    
+
+    const API = getApi();
+
     try {
         const res = await fetch(API + '/report', { method: 'POST', body: formData });
         const data = await res.json();
