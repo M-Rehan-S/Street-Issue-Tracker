@@ -5,6 +5,10 @@ import numpy as np
 from PIL import Image
 import tensorflow as tf
 from flask_cors import CORS
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 
 # This tells Flask to look for templates relative to THIS file's location (for venv)
@@ -27,7 +31,7 @@ output_details = interpreter.get_output_details()
 # Database Configuration
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'rehan2006'
+app.config['MYSQL_PASSWORD'] = os.getenv('DB_PASSWORD')
 app.config['MYSQL_DB'] = 'StreetIssueTracker'
 
 mysql = MySQL(app)
