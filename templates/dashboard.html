@@ -9,14 +9,15 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}" />
 </head>
- 
+
 <body>
-  <nav id="sidebar" data-page="dashboard"  data-username="{{session['username'] }}" data-role = "{{ session['role']}}"></nav>
+  <nav id="sidebar" data-page="dashboard" data-username="{{session['username'] }}" data-role="{{ session['role']}}">
+  </nav>
   <main id="main">
 
     <div class="page-header">
       <h2 class="page-title">Dashboard</h2>
-      <a href="{{url_for ('report_issue') }}" class="btn-primary"><i class="fas fa-plus"></i> Report Issue</a>
+      <a href="{{url_for ('dashboard.report_issue') }}" class="btn-primary"><i class="fas fa-plus"></i> Report Issue</a>
     </div>
 
     <div class="stats-row">
