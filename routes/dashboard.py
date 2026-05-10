@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, session
-
 dashboard_bp = Blueprint('dashboard', __name__)
 
 
@@ -68,7 +67,7 @@ def settings():
 def add_member_page():
     if not session.get('logged_in'):
         return redirect(url_for('dashboard.home'))
-    if session.get('role', '').lower() != 'super admin':
+    if session.get('role', '').lower() != 'SuperAdmin'.lower():
         flash("Access denied. Admins only.")
         return redirect(url_for('dashboard.dashboard'))
     return render_template('members.html')

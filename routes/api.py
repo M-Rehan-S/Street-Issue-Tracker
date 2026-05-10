@@ -17,7 +17,7 @@ def _require_super_admin():
     err = _require_login()
     if err:
         return err
-    if session.get('role', '').lower() != 'super admin':
+    if session.get('role', '').lower() != 'SuperAdmin'.lower():
         return jsonify({'success': False, 'error': 'Access denied.'})
     return None
 
@@ -85,7 +85,7 @@ def change():
             if password:
                 user.Password = password
             if phone:
-                user.Phone_Number = phone
+                user.PhoneNumber = phone
             if email:
                 user.Email = email
             db.session.commit()
@@ -131,16 +131,18 @@ def get_roles():
         return err
 
     try:
-        cur = mysql.connection.cursor()
-        cur.execute(
-            "SELECT RID, R_Name FROM Role "
-            "WHERE NOT (R_NAME = 'Citizen' OR R_NAME = 'Super Admin') "
-            "ORDER BY RID ASC"
-        )
-        rows = cur.fetchall()
-        cur.close()
-        roles = [{'id': row[0], 'name': row[1]} for row in rows]
+        roles = [{'id' : 1, 'name' : 'Admin'}]       
         return jsonify({'success': True, 'roles': roles})
+        # cur = mysql.connection.cursor()
+        # cur.execute(
+        #     "SELECT RID, R_Name FROM Role "
+        #     "WHERE NOT (R_NAME = 'Citizen' OR R_NAME = 'Super Admin') "
+        #     "ORDER BY RID ASC"
+        # )
+        # rows = cur.fetchall()
+        # cur.close()
+        # roles = [{'id': row[0], 'name': row[1]} for row in rows]
+        # return jsonify({'success': True, 'roles': roles})
 
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
@@ -156,38 +158,45 @@ def add_member():
         data     = request.get_json()
         username = data.get('username', '').strip()
         cnic     = data.get('cnic', '').strip()
-        role_id  = data.get('role_id', '').strip()
+        role_name  = data.get('role_name', '').strip()
         passcode = data.get('passcode', '').strip()
         email    = data.get('email', '').strip()
         phone    = data.get('phoneNo', '').strip()
 
-        if not all([username, cnic, role_id, passcode, email, phone]):
+        if not all([username, cnic, role_name, passcode, email, phone]):
             return jsonify({'success': False, 'error': 'All fields are required.'})
 
-        cur = mysql.connection.cursor()
-        cur.execute(
-            "SELECT UID FROM Users WHERE Username = %s OR CNIC = %s",
-            (username, cnic)
-        )
-        if cur.fetchone():
-            cur.close()
+        if User.query.filter((User.Name == username) | (User.CNIC == cnic)).first():
             return jsonify({'success': False, 'error': 'Username or CNIC already exists.'})
+        
+        db.session.add(User(Name = username, CNIC = cnic, PasswordHash = passcode, Role = role_name, Email = email, PhoneNumber = phone))
+        db.session.commit()
 
-        cur2 = mysql.connection.cursor()
-        cur2.execute("SELECT RID FROM Role WHERE RID = %s", (role_id,))
-        if not cur2.fetchone():
-            cur2.close()
-            cur.close()
-            return jsonify({'success': False, 'error': 'Selected department does not exist.'})
-        cur2.close()
 
-        cur.execute(
-            "INSERT INTO Users(Username, Password, CNIC, Email, Phone_Number, RID) "
-            "VALUES(%s, %s, %s, %s, %s, %s)",
-            (username, passcode, cnic, email, phone, role_id)
-        )
-        mysql.connection.commit()
-        cur.close()
+        # cur = mysql.connection.cursor()
+        # cur.execute(
+        #     "SELECT UID FROM Users WHERE Username = %s OR CNIC = %s",
+        #     (username, cnic)
+        # )
+        # if cur.fetchone():
+        #     cur.close()
+        #     return jsonify({'success': False, 'error': 'Username or CNIC already exists.'})
+
+        # cur2 = mysql.connection.cursor()
+        # cur2.execute("SELECT RID FROM Role WHERE RID = %s", (role_id,))
+        # if not cur2.fetchone():
+        #     cur2.close()
+        #     cur.close()
+        #     return jsonify({'success': False, 'error': 'Selected department does not exist.'})
+        # cur2.close()
+
+        # cur.execute(
+        #     "INSERT INTO Users(Username, Password, CNIC, Email, Phone_Number, RID) "
+        #     "VALUES(%s, %s, %s, %s, %s, %s)",
+        #     (username, passcode, cnic, email, phone, role_id)
+        # )
+        # mysql.connection.commit()
+        # cur.close()
         return jsonify({'success': True})
 
     except Exception as e:

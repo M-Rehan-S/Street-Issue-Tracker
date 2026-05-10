@@ -14,7 +14,8 @@ class User(db.Model):
     PasswordHash   = db.Column(db.String(255))
     Role           = db.Column(user_role_enum)
     CreatedAt      = db.Column(db.DateTime, server_default=func.now())
-    DepartmentID   = db.Column(db.String(50))
+    Email          = db.Column(db.String(50), unique=True)
     AssignedRegion = db.Column(db.String(100))
+    PhoneNumber    = db.Column(db.String(20), nullable=True)
 
     reports = db.relationship('Report', backref='submitter', lazy=True)
