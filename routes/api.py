@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify, session, current_app
-from extensions import mysql
+from extensions import mysql, db
 from services import get_ml_service
+from models import User
+
 
 api_bp = Blueprint('api', __name__)
 
@@ -41,38 +43,52 @@ def change():
             return jsonify({'success': False, 'error': 'At least one field is required.'})
 
         user_id     = session.get('UID')
-        set_clauses = []
-        params      = []
+        # set_clauses = []
+        # params      = []
 
-        if username:
-            cur = mysql.connection.cursor()
-            cur.execute("SELECT UID FROM Users WHERE Username = %s", (username,))
-            existing = cur.fetchone()
-            cur.close()
-            if existing and existing[0] != user_id:
-                return jsonify({'success': False, 'error': 'Username is already taken.'})
-            set_clauses.append("Username = %s")
-            params.append(username)
+        # if username:
+        #     cur = mysql.connection.cursor()
+        #     cur.execute("SELECT UID FROM Users WHERE Username = %s", (username,))
+        #     existing = cur.fetchone()
+        #     cur.close()
+        #     if existing and existing[0] != user_id:
+        #         return jsonify({'success': False, 'error': 'Username is already taken.'})
+        #     set_clauses.append("Username = %s")
+        #     params.append(username)
 
-        if password:
-            set_clauses.append("Password = %s")
-            params.append(password)
+        # if password:
+        #     set_clauses.append("Password = %s")
+        #     params.append(password)
 
-        if phone:
-            set_clauses.append("Phone_Number = %s")
-            params.append(phone)
+        # if phone:
+        #     set_clauses.append("Phone_Number = %s")
+        #     params.append(phone)
 
-        if email:
-            set_clauses.append("Email = %s")
-            params.append(email)
+        # if email:
+        #     set_clauses.append("Email = %s")
+        #     params.append(email)
 
-        params.append(user_id)
-        sql = "UPDATE Users SET {} WHERE UID = %s".format(', '.join(set_clauses))
+        # params.append(user_id)
+        # sql = "UPDATE Users SET {} WHERE UID = %s".format(', '.join(set_clauses))
 
-        cur = mysql.connection.cursor()
-        cur.execute(sql, tuple(params))
-        mysql.connection.commit()
-        cur.close()
+        # cur = mysql.connection.cursor()
+        # cur.execute(sql, tuple(params))
+        # mysql.connection.commit()
+        # cur.close()
+
+        # Postgres equivalent using SQLAlchemy ORM: 
+
+        user = User.query.get(user_id)
+        if user:
+            if username and username != user.Username:
+                user.Username = username
+            if password:
+                user.Password = password
+            if phone:
+                user.Phone_Number = phone
+            if email:
+                user.Email = email
+            db.session.commit()
 
         if username:
             session['username'] = username
