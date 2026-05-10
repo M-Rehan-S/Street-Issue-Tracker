@@ -36,6 +36,8 @@ app.config['MYSQL_DB'] = 'StreetIssueTracker'
 
 mysql = MySQL(app)
 
+
+
 # --- AUTHENTICATION ROUTES ---
 
 
