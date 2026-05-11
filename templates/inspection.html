@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Inspection Queue — Street Issue Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='inspection.css') }}" />
+</head>
+
+<body>
+  <nav id="sidebar"
+       data-page="inspection"
+       data-username="{{ session['username'] }}"
+       data-role="{{ session['role'] }}"></nav>
+
+  <main id="main">
+
+    <div class="page-header">
+      <div> 
+        <h2 class="page-title"><i class="fas fa-microscope" style="color:var(--accent);margin-right:10px;"></i>AI Inspection Queue</h2>
+        <p class="page-sub">Reports where AI confidence was below 80% — pending human review.</p>
+      </div>
+      <span class="insp-count-badge" id="inspCount">0 Pending</span>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="card filter-bar">
+      <span class="filter-label"><i class="fas fa-sliders"></i> Filter by</span>
+      <div class="filter-group">
+        <label>Problem Type</label>
+        <select id="filterCategory" onchange="applyFilters()">
+          <option value="">All Types</option>
+          <option>Pothole</option>
+          <option>Broken Streetlight</option>
+          <option>Garbage Overflow</option>
+          <option>Water Leakage</option>
+          <option>Damaged Pavement</option>
+          <option>Illegal Parking</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>AI Label</label>
+        <select id="filterLabel" onchange="applyFilters()">
+          <option value="">All Labels</option>
+          <option value="Pothole">Pothole</option>
+          <option value="Normal">Normal</option>
+        </select>
+      </div>
+      <button class="btn-clear" onclick="clearFilters()">
+        <i class="fas fa-rotate-left"></i> Clear
+      </button>
+    </div>
+
+    <p class="results-meta" id="resultsMeta"></p>
+
+    <!-- Cards grid -->
+    <div class="insp-grid" id="inspGrid"></div>
+
+  </main>
+
+  <!-- ── CONFIRM OVERRIDE MODAL ── -->
+  <div class="modal-overlay" id="overrideOverlay" onclick="closeOverrideModal(event)">
+    <div class="modal-box">
+      <div class="modal-icon"><i class="fas fa-shield-halved"></i></div>
+      <h3 class="modal-title">Override AI Decision?</h3>
+      <p class="modal-desc">
+        You are approving this report manually. It will be moved to
+        <strong>All Reports</strong> and the AI decision will be overridden.
+      </p>
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" onclick="closeOverrideModalDirect()">Cancel</button>
+        <button class="modal-btn-confirm" id="confirmOverrideBtn" onclick="confirmOverride()">
+          <i class="fas fa-check-circle"></i> Yes, Approve
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <script src="{{ url_for('static', filename='sidebar-template.js') }}"></script>
+  <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
+  <script src="{{ url_for('static', filename='inspection.js') }}"></script>
+</body>
+
+</html>
