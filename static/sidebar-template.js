@@ -1,7 +1,7 @@
 /* sidebar-template.js */
 
 function getSidebarHTML(activePage, role) {
-  const isSuperAdmin  = (role || '').toLowerCase() === 'super admin'
+  const isSuperAdmin = (role || '').toLowerCase() === 'superadmin'
   const isAdmin = (role || '').toLowerCase() === 'admin';
 
   return `
@@ -56,14 +56,14 @@ function getSidebarHTML(activePage, role) {
 document.addEventListener('DOMContentLoaded', () => {
   const sidebar = document.getElementById('sidebar');
   if (sidebar) {
-    const page     = sidebar.dataset.page;
+    const page = sidebar.dataset.page;
     const username = sidebar.dataset.username || 'User';
-    const role     = sidebar.dataset.role || 'Citizen';
+    const role = sidebar.dataset.role || 'Citizen';
 
     sidebar.innerHTML = getSidebarHTML(page, role);
 
     document.getElementById('profileName').innerText = username;
     document.getElementById('profileRole').innerText = role;
-    document.getElementById('profilePic').innerText  = username.charAt(0).toUpperCase();
+    document.getElementById('profilePic').innerText = username.charAt(0).toUpperCase();
   }
 });

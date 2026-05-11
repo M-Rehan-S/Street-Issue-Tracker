@@ -7,12 +7,12 @@ async function loadRoles() {
     const data = await res.json();
 
     if (!data.success || !data.roles || data.roles.length === 0) {
-      select.innerHTML = '<option value="">No departments found in database</option>';
+      select.innerHTML = '<option value="">No Roles found in database</option>';
       errorSpan.style.display = 'flex';
       return;
     }
 
-    select.innerHTML = '<option value="">Select department</option>';
+    select.innerHTML = '<option value="">Select Role</option>';
     data.roles.forEach(role => {
       const opt = document.createElement('option');
       opt.value = role.id;
@@ -61,7 +61,7 @@ async function addMember() {
     const res = await fetch('/add-member', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, cnic, role_id: roleId, passcode, email, phoneNo })
+      body: JSON.stringify({ username, cnic, role_name: roleName, passcode, email, phoneNo })
     });
     const data = await res.json();
 
