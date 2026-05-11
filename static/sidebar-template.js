@@ -1,8 +1,8 @@
 /* sidebar-template.js */
 
 function getSidebarHTML(activePage, role) {
-  const isSuperAdmin = (role || '').toLowerCase() === 'superadmin'
-  const isAdmin = (role || '').toLowerCase() === 'admin';
+  const isSuperAdmin = (role || '').toLowerCase() === 'super admin';
+  const isAdmin      = (role || '').toLowerCase() === 'admin';
 
   return `
     <div class="sidebar-brand">
@@ -53,17 +53,85 @@ function getSidebarHTML(activePage, role) {
   `;
 }
 
+/* ── Mobile topbar HTML ── */
+function getMobileTopbarHTML(username) {
+  return `
+    <div class="topbar-brand">
+      <div class="topbar-brand-icon"><i class="fas fa-road"></i></div>
+      <div class="topbar-brand-name">Street Issue<br>Tracker</div>
+    </div>
+    <button id="hamburger-btn" aria-label="Toggle menu" onclick="toggleSidebar()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  `;
+}
+
+function toggleSidebar() {
+  const sidebar  = document.getElementById('sidebar');
+  const overlay  = document.getElementById('sidebar-overlay');
+  const hamburger = document.getElementById('hamburger-btn');
+
+  const isOpen = sidebar.classList.toggle('open');
+  hamburger.classList.toggle('open', isOpen);
+
+  overlay.classList.toggle('active', isOpen);
+
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+}
+
+function closeSidebar() {
+  const sidebar   = document.getElementById('sidebar');
+  const overlay   = document.getElementById('sidebar-overlay');
+  const hamburger = document.getElementById('hamburger-btn');
+
+  sidebar.classList.remove('open');
+  overlay.classList.remove('active');
+  hamburger.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function bindSidebarNavLinks() {
+  const links = document.querySelectorAll('#sidebar .sidebar-nav a');
+  links.forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 768) closeSidebar();
+    });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const sidebar = document.getElementById('sidebar');
-  if (sidebar) {
-    const page = sidebar.dataset.page;
-    const username = sidebar.dataset.username || 'User';
-    const role = sidebar.dataset.role || 'Citizen';
+  if (!sidebar) return;
 
-    sidebar.innerHTML = getSidebarHTML(page, role);
+  const page     = sidebar.dataset.page;
+  const username = sidebar.dataset.username || 'User';
+  const role     = sidebar.dataset.role     || 'Citizen';
 
-    document.getElementById('profileName').innerText = username;
-    document.getElementById('profileRole').innerText = role;
-    document.getElementById('profilePic').innerText = username.charAt(0).toUpperCase();
+  sidebar.innerHTML = getSidebarHTML(page, role);
+
+  document.getElementById('profileName').innerText = username;
+  document.getElementById('profileRole').innerText = role;
+  document.getElementById('profilePic').innerText  = username.charAt(0).toUpperCase();
+
+  const roleLower = role.toLowerCase();
+  if (roleLower === 'super admin') {
+    document.getElementById('profileRole').style.color = '#f97316';
+  } else if (roleLower === 'admin') {
+    document.getElementById('profileRole').style.color = '#facc15';
   }
+
+  const topbar = document.createElement('div');
+  topbar.id = 'mobile-topbar';
+  topbar.innerHTML = getMobileTopbarHTML(username);
+  document.body.prepend(topbar);
+
+  /* ── Inject the dark overlay backdrop ── */
+  const overlay = document.createElement('div');
+  overlay.id = 'sidebar-overlay';
+  overlay.addEventListener('click', closeSidebar);
+  document.body.appendChild(overlay);
+
+  bindSidebarNavLinks();
 });
