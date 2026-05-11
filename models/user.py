@@ -10,7 +10,7 @@ class User(db.Model):
 
     UserID         = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     Name           = db.Column(db.String(100))
-    Email          = db.Column(db.String(50), unique=True)
+    Email          = db.Column(db.String(50))
     PasswordHash   = db.Column(db.String(255))
     Role           = db.Column(user_role_enum)
     CreatedAt      = db.Column(db.DateTime, server_default=func.now())

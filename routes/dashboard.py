@@ -23,7 +23,7 @@ def dashboard():
     return render_template('dashboard.html')
 
 
-@dashboard_bp.route('/report-issue')
+@dashboard_bp.route('/report-issue', methods=['GET'])
 def report_issue():
     redir = _login_required()
     if redir:

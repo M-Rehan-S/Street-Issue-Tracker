@@ -4,7 +4,7 @@ from sqlalchemy import func
 from extensions import db
 
 report_status_enum = ENUM(
-    'Reported', 'Inspected', 'In Progress', 'Resolved',
+    'Reported', 'Inspected', 'InProgress', 'Resolved',
     name='report_status', create_type=False
 )
 

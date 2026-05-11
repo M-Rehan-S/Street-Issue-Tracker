@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, session, current_app
 from extensions import mysql, db
 from services import get_ml_service
-from models import User
+from models import User, Report
 
 
 api_bp = Blueprint('api', __name__)
@@ -114,6 +114,14 @@ def report():
         model_path = current_app.config['MODEL_PATH']
         ml         = get_ml_service(model_path)
         result     = ml.predict(image.stream)
+
+        # Save the report to the database
+        if result.get('label') == 'Normal':
+            return jsonify({'success': True, **result})  # No need to save normal reports
+        user_id = session.get('UID')
+        new_report = Report(SubmitterID=user_id, Category=result.get('label'), AIConfidenceScore=result.get('confidence'), Status=('Reported' if result.get('confidence')<80 else 'Inspected'))
+        db.session.add(new_report)
+        db.session.commit()
         return jsonify({'success': True, **result})
 
     except Exception as e:

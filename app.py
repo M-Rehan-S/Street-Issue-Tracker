@@ -2,7 +2,7 @@ import os
 from flask import Flask
 from config import Config
 from extensions import db, migrate, mysql, cors
-from models import user, report, vote, audit_log
+from models import report_audit_log, user, report, vote
 from routes import auth_bp, dashboard_bp, api_bp
 
 
