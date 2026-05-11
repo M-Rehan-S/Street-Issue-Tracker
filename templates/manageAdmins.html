@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Admins — Street Issue Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='manageAdmins.css') }}" />
+</head>
+
+<body>
+  <nav id="sidebar"
+       data-page="manage-admins"
+       data-username="{{ session['username'] }}"
+       data-role="{{ session['role'] }}"></nav>
+
+  <main id="main">
+
+    <div class="page-header">
+      <div>
+        <h2 class="page-title">
+          <i class="fas fa-users-gear" style="color:var(--accent);margin-right:10px;"></i>Manage Admins
+        </h2>
+        <p class="page-sub">All registered department admins. You can demote them to Citizen.</p>
+      </div>
+      <span class="admin-count-badge" id="adminCount">0 Admins</span>
+    </div>
+
+    <!-- Admin cards grid -->
+    <div class="admin-grid" id="adminGrid"></div>
+
+  </main>
+
+  <!-- ── DEMOTE CONFIRM MODAL ── -->
+  <div class="modal-overlay" id="demoteOverlay" onclick="closeDemoteModal(event)">
+    <div class="modal-box">
+      <div class="modal-icon warning">
+        <i class="fas fa-user-minus"></i>
+      </div>
+      <h3 class="modal-title">Demote this Admin?</h3>
+      <p class="modal-desc">
+        <strong id="demoteTargetName">—</strong> will lose their admin privileges
+        and be moved to the <strong>Citizen</strong> role. This action can be
+        reversed by registering them again as an admin.
+      </p>
+      <div class="modal-actions">
+        <button class="modal-btn-cancel" onclick="closeDemoteModalDirect()">
+          <i class="fas fa-times"></i> Cancel
+        </button>
+        <button class="modal-btn-demote" id="confirmDemoteBtn" onclick="confirmDemote()">
+          <i class="fas fa-user-minus"></i> Yes, Demote
+        </button>
+      </div> 
+    </div>
+  </div>
+
+  <div id="toast"></div>
+  <script src="{{ url_for('static', filename='sidebar-template.js') }}"></script>
+  <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
+  <script src="{{ url_for('static', filename='manageAdmins.js') }}"></script>
+</body>
+
+</html>
