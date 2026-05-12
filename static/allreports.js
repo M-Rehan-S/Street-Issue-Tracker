@@ -5,19 +5,6 @@ let likedSet = new Set(JSON.parse(localStorage.getItem('likedReports') || '[]'))
 let activeModalId = null;
 const API = getApi();
 
-async function addVote(reportId, userId) {
-  try {
-    const res = await fetch(`${API}/vote/${reportId}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId })
-    });
-    if (!res.ok) throw new Error('Failed to add vote');
-  } catch (e) {
-    console.error('Error adding vote:', e);
-  }
-}
-
 /* ── Visibility score: VoteCount drive ranking ── */
 function visibilityScore(r) {
   return (r.VoteCount || 0);
@@ -141,7 +128,7 @@ async function toggleLike(id) {
 
   /* POST to backend */
   try {
-    await fetch(`${API}/report/${id}/like`, {
+    await fetch(`${API}/vote/${id}`, {
       method: already ? 'DELETE' : 'POST'
     });
   } catch (e) { /* offline — local state already updated */ }

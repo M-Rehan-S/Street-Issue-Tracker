@@ -249,10 +249,30 @@ def vote(report_id):
         return err
     try:
         report = Report.query.get(report_id)
-        if report:
-            report.VoteCount += 1
-            db.session.commit()
-        return jsonify({'success': True})
+        report.VoteCount = (report.VoteCount or 0) + 1
+        db.session.commit()
+        user_id = session.get('UID')
+        new_vote = Vote(ReportID=report_id, UserID=user_id)
+        db.session.add(new_vote)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Vote added.'})
 
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+@api_bp.route('/vote/<uuid:report_id>', methods=['DELETE'])
+def remove_vote(report_id):
+    err = _require_login()
+    if err:
+        return err
+    try:
+        report = Report.query.get(report_id)
+        report.VoteCount = max(0, (report.VoteCount or 1) - 1)
+        db.session.commit()
+        user_id = session.get('UID')
+        vote = Vote.query.filter_by(ReportID=report_id, UserID=user_id).first()
+        if vote:
+            db.session.delete(vote)
+            db.session.commit()
+        return jsonify({'success': True, 'message': 'Vote removed.'})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
