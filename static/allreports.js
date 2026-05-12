@@ -170,6 +170,7 @@ function isPrivileged() {
   const role = (sidebar ? sidebar.dataset.role : 'citizen').toLowerCase();
   return role === 'admin' || role === 'superadmin';
 }
+
 /* ── Admin modal ── */
 function openModal(id, categoryName) {
   if (!isPrivileged()) return;

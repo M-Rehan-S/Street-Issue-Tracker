@@ -124,7 +124,7 @@ def update_report_status(report_id):
             return jsonify({'success': False, 'error': 'Report Not Found'})
         report.Status = new_status
         db.session.commit()
-        print(f"Updating Report {report_id} to {new_status}") # Debug log
+        print(f"Updating Report {report_id} to {new_status}") 
         
         # 3. Return a success response
         return jsonify({
