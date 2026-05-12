@@ -12,8 +12,9 @@ def register():
         password = request.form.get('password')
         cnic     = request.form.get('CNIC')
         email    = request.form.get('email')
+        phone    = request.form.get('PhoneNo')
 
-        if not username or not password or not cnic or not email:
+        if not username or not password or not cnic or not email or not phone:
             flash("All fields are required!")
             return redirect(url_for('dashboard.home'))
         
@@ -21,7 +22,7 @@ def register():
             flash("Username already exists! OR CNIC Already Registered")
             return redirect(url_for('dashboard.home'))
         print('Me idher aarha hu')
-        db.session.add(User(Name = username, CNIC = cnic, PasswordHash = password, Role = 'Citizen'))
+        db.session.add(User(Name = username, CNIC = cnic, PasswordHash = password, Role = 'Citizen', PhoneNumber = phone, Email = email))
         db.session.commit()
 
         session['logged_in'] = True

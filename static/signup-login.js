@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const container    = document.querySelector('.auth-container');
+    const container = document.querySelector('.auth-container');
     const toggleButtons = document.querySelectorAll('.toggle-form');
-    const heading      = document.querySelector('.welcome-heading');
-    const message      = document.querySelector('.welcome-message');
+    const heading = document.querySelector('.welcome-heading');
+    const message = document.querySelector('.welcome-message');
 
     toggleButtons.forEach(button => {
         button.addEventListener('click', (e) => {
@@ -32,10 +32,8 @@ function formatPhone(input) {
         let formatted = '';
         if (digits.length <= 4) {
             formatted = digits;
-        } else if (digits.length <= 7) {
-            formatted = digits.slice(0, 4) + '-' + digits.slice(4);
         } else {
-            formatted = digits.slice(0, 4) + '-' + digits.slice(4, 7) + '-' + digits.slice(7);
+            formatted = digits.slice(0, 4) + '-' + digits.slice(4);
         }
         this.value = formatted;
     });
