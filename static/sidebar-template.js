@@ -1,9 +1,9 @@
 /* sidebar-template.js */
 
 function getSidebarHTML(activePage, role) {
-  const isSuperAdmin = (role || '').toLowerCase() === 'super admin';
-  const isAdmin      = (role || '').toLowerCase() === 'admin';
-  const isPrivileged = isSuperAdmin || isAdmin;   // admin + super admin see inspection page
+  const isSuperAdmin = (role || '').toLowerCase() === 'superadmin';
+  const isAdmin = (role || '').toLowerCase() === 'admin';
+  const isPrivileged = isSuperAdmin || isAdmin;   // admin + superadmin see inspection page
 
   return `
     <div class="sidebar-brand">
@@ -75,18 +75,18 @@ function getMobileTopbarHTML(username) {
 }
 
 function toggleSidebar() {
-  const sidebar   = document.getElementById('sidebar');
-  const overlay   = document.getElementById('sidebar-overlay');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
   const hamburger = document.getElementById('hamburger-btn');
-  const isOpen    = sidebar.classList.toggle('open');
+  const isOpen = sidebar.classList.toggle('open');
   hamburger.classList.toggle('open', isOpen);
   overlay.classList.toggle('active', isOpen);
   document.body.style.overflow = isOpen ? 'hidden' : '';
 }
 
 function closeSidebar() {
-  const sidebar   = document.getElementById('sidebar');
-  const overlay   = document.getElementById('sidebar-overlay');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
   const hamburger = document.getElementById('hamburger-btn');
   sidebar.classList.remove('open');
   overlay.classList.remove('active');
@@ -106,18 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebar = document.getElementById('sidebar');
   if (!sidebar) return;
 
-  const page     = sidebar.dataset.page;
+  const page = sidebar.dataset.page;
   const username = sidebar.dataset.username || 'User';
-  const role     = sidebar.dataset.role     || 'Citizen';
+  const role = sidebar.dataset.role || 'Citizen';
 
   sidebar.innerHTML = getSidebarHTML(page, role);
 
   document.getElementById('profileName').innerText = username;
   document.getElementById('profileRole').innerText = role;
-  document.getElementById('profilePic').innerText  = username.charAt(0).toUpperCase();
+  document.getElementById('profilePic').innerText = username.charAt(0).toUpperCase();
 
   const roleLower = role.toLowerCase();
-  if (roleLower === 'super admin') {
+  if (roleLower === 'superadmin') {
     document.getElementById('profileRole').style.color = '#f97316';
   } else if (roleLower === 'admin') {
     document.getElementById('profileRole').style.color = '#facc15';

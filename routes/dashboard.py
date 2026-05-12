@@ -106,4 +106,22 @@ def add_member_page():
         return redirect(url_for('dashboard.dashboard'))
     return render_template('members.html')
 
+@dashboard_bp.route('/manage-admins')
+def manage_admins():
+    if not session.get('logged_in'):
+        return redirect(url_for('dashboard.home'))
+    if session.get('role', '').lower() != 'SuperAdmin'.lower():
+        flash("Access denied. Admins only.")
+        return redirect(url_for('dashboard.dashboard'))
+    return render_template('manageAdmins.html')
+
+@dashboard_bp.route('/inspection')
+def inspection():
+    if not session.get('logged_in'):
+        return redirect(url_for('dashboard.home'))
+    if session.get('role', '').lower() == 'Citizen'.lower():
+        flash("Access denied.")
+        return redirect(url_for('dashboard.dashboard'))
+    return render_template('inspection.html')
+
 
