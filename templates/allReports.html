@@ -103,7 +103,7 @@
       </div>
 
       <hr class="drawer-divider" />
-
+ 
       <div class="drawer-like-section">
         <button class="like-btn like-btn-full" id="drawerLikeBtn" onclick="drawerToggleLike()">
           <i class="fas fa-thumbs-up"></i>
@@ -153,6 +153,30 @@
   </div>
 
   <div id="toast"></div>
+  <div class="status-modal-overlay" id="statusModal" onclick="closeModal(event)">
+  <div class="status-modal-card">
+    <div class="status-modal-header">
+      <h3 id="modalReportTitle">Report</h3>
+      <button class="drawer-close" onclick="document.getElementById('statusModal').classList.remove('open'); activeModalId = null;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="status-modal-body">
+      <label class="workflow-label">Select New Status</label>
+      <select id="modalStatusSelect" class="status-select">
+        <option value="">— Choose status —</option>
+        <option value="Reported">Reported</option>
+        <option value="Inspected">Inspected</option>
+        <option value="InProgress">In Progress</option>
+      </select>
+    </div>
+    <div class="status-modal-footer">
+      <button class="wf-btn wf-pending" onclick="setStatus(document.getElementById('modalStatusSelect').value)">
+        <i class="fas fa-check"></i> Apply
+      </button>
+    </div>
+  </div>
+</div>
   <script src="{{ url_for('static', filename='include.js') }}"></script>
   <script src="{{ url_for('static', filename='sidebar-template.js') }}"></script>
   <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
