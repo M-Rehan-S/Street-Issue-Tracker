@@ -28,8 +28,16 @@ def load_dashboard():
     if redir:
         return redir
     try:
-        reports = Report.query.filter_by(SubmitterID=session.get('UID'), Category = 'Pothole').order_by(Report.CreatedAt.desc()).all()
-        recent_report = Report.query.filter_by(SubmitterID=session.get('UID')).order_by(Report.CreatedAt.desc()).first()
+        reports = []
+        if session.get('role', '').lower() == 'Citizen'.lower():
+            reports = Report.query.filter_by(SubmitterID=session.get('UID'), Category = 'Pothole').order_by(Report.CreatedAt.desc()).all()
+        else:
+            reports = Report.query.filter_by(Category = 'Pothole').order_by(Report.CreatedAt.desc()).all()
+        recent_report = None
+        if session.get('role', '').lower() == 'Citizen'.lower():
+            recent_report = Report.query.filter_by(SubmitterID=session.get('UID')).order_by(Report.CreatedAt.desc()).first()
+        else:
+            recent_report = Report.query.order_by(Report.CreatedAt.desc()).first()
         return_reports = [{
             'location': report.Location,
             'category': report.Category,
@@ -132,5 +140,3 @@ def inspection():
         flash("Access denied.")
         return redirect(url_for('dashboard.dashboard'))
     return render_template('inspection.html')
-
-

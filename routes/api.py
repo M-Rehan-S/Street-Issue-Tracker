@@ -165,3 +165,29 @@ def reports():
             'ImageURL': r.ImageURL
         } for r in reports
     ]})
+
+@api_bp.route('/inspection/reports')
+def inspection_routes():
+    err = _require_super_admin()
+    if err:
+        return err
+    try:
+        uid = session.get('UID')
+        reports = Report.query.filter(Report.Status == 'Reported', Report.AIConfidenceScore < 80).order_by(Report.CreatedAt.asc()).all()
+
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+    return jsonify({'success': True, 'reports': [
+        {
+            'ReportID': r.ReportID,
+            'SubmitterID': r.SubmitterID,
+            'Category': r.Category,
+            'AIConfidenceScore': r.AIConfidenceScore,
+            'Status': r.Status,
+            'CreatedAt': r.CreatedAt.isoformat(sep=' ', timespec='minutes'),
+            'VoteCount': r.VoteCount, 
+            'Description': r.Description,
+            'Location': r.Location, 
+            'ImageURL': r.ImageURL
+        } for r in reports
+    ]})

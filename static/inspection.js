@@ -1,17 +1,17 @@
 /* inspection.js */
 
-let allReports   = [];   // all inspection-queue reports from DB
+let allReports = [];   // all inspection-queue reports from DB
 let pendingOverrideId = null;  // report ID waiting for confirmation
 
 /* ── Build one card ── */
 function buildCard(r) {
-  const conf     = r.AIConfidenceScore != null ? parseFloat(r.AIConfidenceScore).toFixed(1) : '—';
-  const confNum  = parseFloat(r.AIConfidenceScore) || 0;
-  const label    = r.AILabel || 'Unknown';
-  const type     = r.category || r.Category || '—';
-  const loc      = r.location || r.Location || '—';
-  const date     = r.date     || r.Date     || '—';
-  const imgSrc   = r.image_url || r.ImageURL || null;
+  const conf = r.AIConfidenceScore != null ? parseFloat(r.AIConfidenceScore).toFixed(1) : '—';
+  const confNum = parseFloat(r.AIConfidenceScore) || 0;
+  const label = r.AILabel || 'Unknown';
+  const type = r.category || r.Category || '—';
+  const loc = r.location || r.Location || '—';
+  const date = r.CreatedAt || r.Date || '—';
+  const imgSrc = r.image_url || r.ImageURL || null;
 
   const thumbHtml = imgSrc
     ? `<img class="insp-thumb" src="${imgSrc}" alt="Report photo" />`
@@ -77,24 +77,23 @@ function renderGrid(reports) {
   }
 
   meta.innerHTML = `Showing <strong>${reports.length}</strong> report${reports.length !== 1 ? 's' : ''} flagged for human review`;
-  grid.innerHTML  = reports.map(r => buildCard(r)).join('');
+  grid.innerHTML = reports.map(r => buildCard(r)).join('');
 }
 
 /* ── Filters ── */
 function applyFilters() {
-  const cat   = document.getElementById('filterCategory').value;
+  const cat = document.getElementById('filterCategory').value;
   const label = document.getElementById('filterLabel').value;
 
   let filtered = allReports;
-  if (cat)   filtered = filtered.filter(r => (r.category || r.Category) === cat);
+  if (cat) filtered = filtered.filter(r => (r.category || r.Category) === cat);
   if (label) filtered = filtered.filter(r => (r.AILabel || '') === label);
-
   renderGrid(filtered);
 }
 
 function clearFilters() {
   document.getElementById('filterCategory').value = '';
-  document.getElementById('filterLabel').value    = '';
+  document.getElementById('filterLabel').value = '';
   renderGrid(allReports);
 }
 
@@ -123,8 +122,8 @@ async function confirmOverride() {
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing…';
 
   try {
-    const res  = await fetch(`/inspection/override/${pendingOverrideId}`, {
-      method:  'POST',
+    const res = await fetch(`/inspection/override/${pendingOverrideId}`, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     });
     const data = await res.json();
@@ -135,8 +134,8 @@ async function confirmOverride() {
       /* Remove card from DOM without full reload */
       const card = document.getElementById(`insp-card-${pendingOverrideId}`);
       if (card) {
-        card.style.opacity    = '0';
-        card.style.transform  = 'scale(0.95)';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
         card.style.transition = 'all 0.3s';
         setTimeout(() => {
           card.remove();
@@ -167,9 +166,8 @@ async function confirmOverride() {
 /* ── Load reports from backend ── */
 async function loadInspectionQueue() {
   try {
-    const res  = await fetch('/inspection/reports');
+    const res = await fetch('/inspection/reports');
     const data = await res.json();
-
     if (!data.success) {
       document.getElementById('inspGrid').innerHTML =
         `<div style="grid-column:1/-1">${emptyHtml(data.error || 'Failed to load.')}</div>`;
