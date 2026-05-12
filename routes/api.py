@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, session, current_app
 from extensions import db
 from services import get_ml_service, get_nearby_duplicates
-from models import User, Report
+from models import User, Report, Vote
 
 
 api_bp = Blueprint('api', __name__)
@@ -20,11 +20,16 @@ def _require_super_admin():
     if session.get('role', '').lower() != 'SuperAdmin'.lower():
         return jsonify({'success': False, 'error': 'Access denied.'})
     return None
-
+def _require_admin():
+    err = _require_login()
+    if err:
+        return err
+    if session.get('role', '').lower() != 'Admin'.lower() and session.get('role', '').lower() != 'SuperAdmin'.lower():
+        return jsonify({'success': False, 'error': 'Access denied.'})
+    return None
 
 # ------------------------------------------------------------------
-# Personal details
-# ------------------------------------------------------------------
+# ------------------------------------------------------------------ lemme cook
 
 @api_bp.route('/personal-details', methods=['POST'])
 def change():
@@ -178,7 +183,7 @@ def reports():
 
 @api_bp.route('/inspection/reports')
 def inspection_routes():
-    err = _require_super_admin()
+    err = _require_admin()
     if err:
         return err
     try:
@@ -230,6 +235,21 @@ def override_inspection(report_id):
         report = Report.query.get(report_id)
         if report:
             report.Status = 'Inspected'
+            db.session.commit()
+        return jsonify({'success': True})
+
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+    
+@api_bp.route('/vote/<uuid:report_id>', methods=['POST'])
+def vote(report_id):
+    err = _require_login()
+    if err:
+        return err
+    try:
+        report = Report.query.get(report_id)
+        if report:
+            report.VoteCount += 1
             db.session.commit()
         return jsonify({'success': True})
 

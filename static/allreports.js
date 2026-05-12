@@ -7,7 +7,7 @@ const API = getApi();
 
 async function addVote(reportId, userId) {
   try {
-    const res = await fetch(`${API}/report/like/${reportId}`, {
+    const res = await fetch(`${API}/vote/${reportId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId })
