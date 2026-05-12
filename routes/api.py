@@ -161,6 +161,7 @@ def reports():
             'CreatedAt': r.CreatedAt.isoformat(),
             'VoteCount': r.VoteCount, 
             'Description': r.Description,
-            'Location': r.Location
+            'Location': r.Location, 
+            'ImageURL': r.ImageURL
         } for r in reports
     ]})

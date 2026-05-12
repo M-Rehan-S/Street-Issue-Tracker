@@ -2,31 +2,31 @@
 
 let resolvedReports = [];
 let activeReportId = null;
-
+const API = getApi();
 /* ── Build resolved card ── */
 function buildCard(r) {
-    const desc = r.description || r.desc || '';
+    const desc = r.Description || '';
 
-    const imgHtml = r.image_url
-        ? `<img src="${r.image_url}" class="card-img-top-custom" alt="Issue photo"/>`
+    const imgHtml = r.ImageUrl
+        ? `<img src="${r.ImageUrl}" class="card-img-top-custom" alt="Issue photo"/>`
         : `<div class="card-img-placeholder"><i class="fas fa-image fa-2x" style="opacity:.2"></i></div>`;
 
     /* Check if proof exists locally */
-    const proofUrl = localStorage.getItem(`proof_${r.id}`) || r.proof_image_url || '';
+    const proofUrl = localStorage.getItem(`proof_${r.ReportID}`) || r.proof_image_url || '';
 
     return `
-    <div class="col-md-6 col-lg-4 d-flex" id="col-${r.id}">
-      <div class="report-card w-100" onclick="openDetail('${r.id}')">
+    <div class="col-md-6 col-lg-4 d-flex" id="col-${r.ReportID}">
+      <div class="report-card w-100" onclick="openDetail('${r.ReportID}')">
         <div class="fixed-ribbon"><i class="fas fa-circle-check"></i> Fixed</div>
         ${imgHtml}
         <div class="card-body-custom">
           <div>
-            <div class="card-category">${r.category || 'Issue'}</div>
-            <div class="card-location"><i class="fas fa-location-dot"></i> ${r.location || '—'}</div>
+            <div class="card-category">${r.Category || 'Issue'}</div>
+            <div class="card-location"><i class="fas fa-location-dot"></i> ${r.Location || '—'}</div>
           </div>
           ${desc ? `<div class="card-desc">${desc}</div>` : ''}
           <div class="d-flex align-items-center justify-content-between mt-auto">
-            <span class="card-date"><i class="fas fa-calendar-days me-1" style="opacity:.5"></i>${r.date || '—'}</span>
+            <span class="card-date"><i class="fas fa-calendar-days me-1" style="opacity:.5"></i>${r.CreatedAt || '—'}</span>
             <span class="click-hint"><i class="fas fa-images"></i> See before &amp; after</span>
           </div>
         </div>
@@ -35,7 +35,7 @@ function buildCard(r) {
             <i class="fas fa-camera"></i>
             ${proofUrl ? 'Proof uploaded' : 'No proof on file'}
           </span>
-          <span style="font-size:12px;color:var(--text-muted)">${r.likes || 0} supported</span>
+          <span style="font-size:12px;color:var(--text-muted)">${r.VoteCount || 0} supported</span>
         </div>
       </div>
     </div>`;
@@ -62,7 +62,7 @@ function renderGrid(reports) {
 
 /* ══════════ DETAIL DRAWER ══════════ */
 function openDetail(id) {
-    const r = resolvedReports.find(r => String(r.id) === String(id));
+    const r = resolvedReports.find(r => String(r.ReportID) === String(id));
     if (!r) return;
     activeReportId = id;
 
@@ -73,18 +73,18 @@ function openDetail(id) {
         : `<div class="ba-placeholder"><i class="fas fa-image fa-2x" style="opacity:.2"></i><small>No before photo</small></div>`;
 
     /* After image (proof) */
-    const proofUrl = localStorage.getItem(`proof_${r.id}`) || r.proof_image_url || '';
+    const proofUrl = localStorage.getItem(`proof_${r.ReportID}`) || r.proof_image_url || '';
     const afterEl = document.getElementById('drawerAfter');
     afterEl.innerHTML = proofUrl
         ? `<img src="${proofUrl}" alt="After — proof of fix"/>`
         : `<div class="ba-placeholder"><i class="fas fa-camera fa-2x" style="opacity:.2"></i><small>No after photo</small></div>`;
 
     /* Fields */
-    document.getElementById('drawerTitle').textContent = r.category || 'Issue';
-    document.getElementById('drawerLocation').innerHTML = `<i class="fas fa-location-dot me-1"></i>${r.location || '—'}`;
+    document.getElementById('drawerTitle').textContent = r.Category || 'Issue';
+    document.getElementById('drawerLocation').innerHTML = `<i class="fas fa-location-dot me-1"></i>${r.Location || '—'}`;
     document.getElementById('drawerReporter').textContent = r.reported_by || 'Anonymous';
-    document.getElementById('drawerDate').textContent = r.date || '—';
-    document.getElementById('drawerLikes').textContent = `${r.likes || 0} people reported this`;
+    document.getElementById('drawerDate').textContent = r.CreatedAt || '—';
+    document.getElementById('drawerLikes').textContent = `${r.VoteCount || 0} people reported this`;
     document.getElementById('drawerResolvedBy').textContent = r.resolved_by || 'Municipal Authority';
     document.getElementById('drawerDesc').textContent = r.description || r.desc || 'No description provided.';
 
@@ -106,7 +106,7 @@ function closeDetailDirect() {
 function applyFilters() {
     const cat = document.getElementById('filterCategory').value;
     let filtered = resolvedReports;
-    if (cat) filtered = filtered.filter(r => r.category === cat);
+    if (cat) filtered = filtered.filter(r => r.Category === cat);
     renderGrid(filtered);
 }
 
@@ -118,10 +118,12 @@ function clearFilters() {
 /* ── Load ── */
 async function loadResolved() {
     try {
+        console.log('Hello')
         const res = await fetch(API + '/reports');
         const data = await res.json();
+        console.log('World')
         /* Filter only Fixed reports */
-        resolvedReports = (data.reports || []).filter(r => r.status === 'Fixed');
+        resolvedReports = (data.reports || []).filter(r => r.Status === 'Resolved');
         renderGrid(resolvedReports);
     } catch (e) {
         document.getElementById('resolvedGrid').innerHTML =
