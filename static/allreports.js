@@ -154,7 +154,7 @@ function applyFilters() {
 
   let filtered = allReports;
   if (cat) filtered = filtered.filter(r => r.Category === cat);
-  if (stat) filtered = filtered.filter(r => (r.Status || 'Open') === stat);
+  if (stat) filtered = filtered.filter(r => (r.Status || 'Reported') === stat);
 
   renderGrid(filtered);
 }
