@@ -110,50 +110,17 @@
     object-fit: cover;
 }
 
-/* ── Slideshow ─────────────────────────────── */
-
-/* Outer clipping frame — hides the off-screen slides */
-#slideshowContainer {
-    position: relative;
-    overflow: hidden;
-    /* min-height keeps the card from collapsing while slides animate */
-    min-height: 96px;
+/* Slideshow */
+.slide {
+    display: none;
 }
 
-.slide {
-    /* All slides are absolutely stacked; width matches the container */
-    position: absolute;
-    inset: 0;
+.slide.active {
     display: flex;
     gap: 18px;
     align-items: flex-start;
-
-    /* Start every slide shifted to the right and invisible */
-    opacity: 0;
-    transform: translateX(48px);
-    transition: opacity 0.45s ease, transform 0.45s ease;
-
-    /* Prevent interaction while hidden */
-    pointer-events: none;
 }
 
-/* The visible slide sits in place */
-.slide.active {
-    position: relative;   /* takes up space so the container has height */
-    opacity: 1;
-    transform: translateX(0);
-    pointer-events: auto;
-}
-
-/* Slide that just left — exits to the left */
-.slide.slide-exit {
-    position: absolute;
-    opacity: 0;
-    transform: translateX(-48px);
-    pointer-events: none;
-}
-
-/* Dots */
 .slide-dots {
     display: flex;
     gap: 6px;
@@ -167,22 +134,9 @@
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.15);
     cursor: pointer;
-    transition: background 0.25s, transform 0.25s;
-}
-
-.slide-dot:hover {
-    transform: scale(1.4);
+    transition: background 0.25s;
 }
 
 .slide-dot.active {
     background: var(--accent);
-    transform: scale(1.25);
-}
-
-/* ── Responsive tweaks ─────────────────────── */
-@media (max-width: 600px) {
-    .slide {
-        flex-direction: column;
-        gap: 12px;
-    }
 }

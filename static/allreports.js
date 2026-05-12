@@ -6,15 +6,6 @@ let activeModalId = null;
 const API = getApi();
 // Function for fetching allreports
 
-function getAllReports() {
-
-
-
-
-
-}
-
-
 
 
 /* ── Visibility score: VoteCount drive ranking ── */
@@ -165,9 +156,9 @@ function clearFilters() {
 }
 
 function isPrivileged() {
-  const sidebar = document.getElementById('sidebar')
-  const role = sidebar ? sidebar.dataset.role : 'citizen';
-  return role !== 'citizen';
+  const sidebar = document.getElementById('sidebar');
+  const role = (sidebar ? sidebar.dataset.role : 'citizen').toLowerCase();
+  return role === 'admin' || role === 'superadmin';
 }
 /* ── Admin modal ── */
 function openModal(id, categoryName) {
