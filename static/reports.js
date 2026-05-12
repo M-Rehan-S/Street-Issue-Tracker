@@ -35,36 +35,13 @@ function removeImage() {
     document.getElementById('imagePreview').style.display = 'none';
 }
 
-function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                console.log(`Latitude: ${lat}, Longitude: ${lon}`);
-                
-                // Now send this data to your Flask backend
-                return (lat, lon);
-            },
-            (error) => {
-                console.error("Error getting location: ", error.message);
-                alert("Please enable location services to check for duplicates.");
-            }
-        );
-    } else {
-        alert("Geolocation is not supported by this browser.");
-    }
-}
-
-
-
 async function submitReport() {
     const location = document.getElementById('repLocation').value.trim();
     const category = document.getElementById('repCategory').value;
     const date     = document.getElementById('repDate').value;
     const desc     = document.getElementById('repDesc').value.trim();
     const imgFile  = document.getElementById('repImage').files[0];
-    const lat, long = getLocation();
+
     if (!location) {
         showToast('Please fill in Location.', '#f87171');
         return;
@@ -88,8 +65,6 @@ async function submitReport() {
     formData.append('date',        date);
     formData.append('description', desc);
     if (imgFile) formData.append('image', imgFile);
-    formData.append('latitude', lat);
-    formData.append('longitude', long);
 
     const API = getApi();
 
@@ -98,17 +73,14 @@ async function submitReport() {
         const data = await res.json();
 
         console.log(data); // Debug log to check response from model
-        if(data.success == false || data.label != 'Pothole') {
-            showToast('Submission failed: ' + (data.error || 'Unknown error'), '#f87171');
-        }else if(data.success == true && data.nearby_duplicates.length > 0){
-            // Call a function to confirm with the user if they want to submit anyway after showing them the nearby duplicates
-        }else if (data.success && data.label == 'Pothole') {
+
+        if (data.success && data.label == 'Pothole') {
             showToast('Report submitted successfully! 🎉');
             document.getElementById('repLocation').value = '';
             document.getElementById('repCategory').value = '';
             document.getElementById('repDate').value     = '';
             document.getElementById('repDesc').value     = '';
-            removeImage(); 
+            removeImage();
         } else {
             showToast('Submission failed: ' + (data.error || 'Unknown error'), '#f87171');
         }
@@ -117,7 +89,6 @@ async function submitReport() {
     }
 }
 
-/* Set today's date as default */
 document.addEventListener('DOMContentLoaded', () => {
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('repDate').value = today;

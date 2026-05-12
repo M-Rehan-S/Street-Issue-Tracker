@@ -92,8 +92,9 @@ function showDemoFallback() {
         emptyHtml('No reports yet.');
 }
 
-let slideTimer = null;
+let slideTimer   = null;
 let currentSlide = 0;
+let isAnimating  = false;   // guard: ignore clicks while transition plays
 
 function startSlideshow(count) {
     clearInterval(slideTimer);
@@ -105,9 +106,31 @@ function startSlideshow(count) {
 }
 
 function goSlide(idx) {
-    document.querySelectorAll('.slide').forEach((s, i) => s.classList.toggle('active', i === idx));
-    document.querySelectorAll('.slide-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    if (isAnimating) return;
+    const slides = document.querySelectorAll('.slide');
+    const dots   = document.querySelectorAll('.slide-dot');
+    if (!slides.length || idx === currentSlide && slides[idx].classList.contains('active')) return;
+
+    isAnimating = true;
+
+    const prev = currentSlide;
     currentSlide = idx;
+
+    /* 1. Mark the outgoing slide so it flies left */
+    slides[prev].classList.add('slide-exit');
+    slides[prev].classList.remove('active');
+
+    /* 2. Bring the new slide in from the right */
+    slides[idx].classList.add('active');
+
+    /* 3. Update dots immediately */
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+
+    /* 4. After the transition finishes, clean up the exit class */
+    setTimeout(() => {
+        slides[prev].classList.remove('slide-exit');
+        isAnimating = false;
+    }, 460);   /* matches the CSS transition duration (0.45s) + tiny buffer */
 }
 
 document.addEventListener('DOMContentLoaded', loadDashboard);
