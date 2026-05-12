@@ -211,6 +211,7 @@ async function setStatus(newStatus) {
 
   // 3. PATCH to backend
   try {
+    const API = getApi() 
     const response = await fetch(`${API}/report/${currentId}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
