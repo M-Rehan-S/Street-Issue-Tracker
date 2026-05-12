@@ -29,6 +29,7 @@ def load_dashboard():
         return redir
     try:
         reports = Report.query.filter_by(SubmitterID=session.get('UID'), Category = 'Pothole').order_by(Report.CreatedAt.desc()).all()
+        recent_report = Report.query.filter_by(SubmitterID=session.get('UID')).order_by(Report.CreatedAt.desc()).first()
         return_reports = [{
             'location': report.Location,
             'category': report.Category,
@@ -37,7 +38,14 @@ def load_dashboard():
             'image_url': report.ImageURL
         } for report in reports]
         total = len(return_reports)
-        recent_report = Report.query.filter_by(SubmitterID=session.get('UID')).order_by(Report.CreatedAt.desc()).first()
+        trending = Report.query.order_by(Report.VoteCount.desc()).limit(7).all()
+        trending_reports = [{
+            'location': trending.Location,
+            'category': trending.Category,
+            'status': trending.Status,
+            'date': trending.CreatedAt.isoformat(),
+            'image_url': trending.ImageURL
+        } for trending in trending]
         return jsonify({'success': True, 'your_reports': return_reports, 'stats' : {
             'total': total,
             'fixed': len([r for r in return_reports if r['status'] == 'Resolved']),
@@ -50,7 +58,8 @@ def load_dashboard():
             'status': recent_report.Status,
             'date': recent_report.CreatedAt.isoformat(),
             'image_url': recent_report.ImageURL
-        } if recent_report else None
+        } if recent_report else None,
+        'most_faced' : trending_reports
         }
         )
     except Exception as e:

@@ -38,7 +38,7 @@ async function loadDashboard() {
             rr.innerHTML = emptyHtml('No recent reports. The streets are clean! 🎉');
         }
 
-        // Slideshow
+        // Slideshow - Most Faced Issues
         const problems = (d.most_faced || []).slice(0, 7);
         const sc = document.getElementById('slideshowContainer');
         const sd = document.getElementById('slideDots');
