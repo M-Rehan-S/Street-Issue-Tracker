@@ -20,6 +20,7 @@ def _require_super_admin():
     if session.get('role', '').lower() != 'SuperAdmin'.lower():
         return jsonify({'success': False, 'error': 'Access denied.'})
     return None
+
 def _require_admin():
     err = _require_login()
     if err:

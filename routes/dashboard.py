@@ -94,15 +94,6 @@ def resolved():
         return redir
     return render_template('Resolved.html')
 
-
-@dashboard_bp.route('/leaderboard')
-def leaderboard():
-    redir = _login_required()
-    if redir:
-        return redir
-    return render_template('communityLeaderboard.html')
-
-
 @dashboard_bp.route('/settings')
 def settings():
     redir = _login_required()

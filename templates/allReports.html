@@ -11,15 +11,13 @@
 </head>
 
 <body>
-  <nav id="sidebar" data-page="all-reports" data-username="{{session['username'] }}" data-role="{{ session['role']}}">
-  </nav>
-  <main id="main">
+  <nav id="sidebar" data-page="all-reports" data-username="{{session['username']}}" data-role="{{ session['role']}}"></nav>
 
+  <main id="main">
     <div class="page-header">
       <h2 class="page-title">All Reports</h2>
     </div>
 
-    <!-- Filter bar -->
     <div class="card filter-bar">
       <span class="filter-label"><i class="fas fa-sliders"></i> Filter by</span>
 
@@ -44,6 +42,7 @@
           <option>Reported</option>
           <option>Inspected</option>
           <option>InProgress</option>
+          <option>Resolved</option>
         </select>
       </div>
 
@@ -54,10 +53,8 @@
 
     <p class="results-meta" id="resultsMeta"></p>
     <div class="reports-grid" id="reportsGrid"></div>
-
   </main>
 
-  <!-- ══════ DETAIL DRAWER ══════ -->
   <div class="detail-overlay" id="detailOverlay" onclick="closeDetail(event)">
     <div class="detail-drawer" id="detailDrawer">
       <button class="drawer-close" onclick="closeDetailDirect()"><i class="fas fa-times"></i></button>
@@ -103,7 +100,7 @@
       </div>
 
       <hr class="drawer-divider" />
- 
+
       <div class="drawer-like-section">
         <button class="like-btn like-btn-full" id="drawerLikeBtn" onclick="drawerToggleLike()">
           <i class="fas fa-thumbs-up"></i>
@@ -111,7 +108,6 @@
         </button>
       </div>
 
-      <!-- Admin / Dept controls -->
       <div class="drawer-admin-section" id="drawerAdminSection" style="display:none">
         <div class="admin-section-title">
           <i class="fas fa-shield-halved"></i>
@@ -120,12 +116,18 @@
 
         <div class="workflow-label">Change Status</div>
         <div class="workflow-btns">
-          <button class="wf-btn wf-open" onclick="setStatusFromDrawer('Open')"><i class="fas fa-circle-exclamation"></i>
-            Open</button>
-          <button class="wf-btn wf-pending" onclick="setStatusFromDrawer('Pending')"><i class="fas fa-clock"></i> In
-            Progress</button>
-          <button class="wf-btn wf-fixed" onclick="setStatusFromDrawer('Fixed')"><i class="fas fa-circle-check"></i>
-            Mark as Fixed</button>
+          <button class="wf-btn wf-reported" onclick="setStatusFromDrawer('Reported')">
+            <i class="fas fa-flag"></i> Reported
+          </button>
+          <button class="wf-btn wf-inspected" onclick="setStatusFromDrawer('Inspected')">
+            <i class="fas fa-magnifying-glass"></i> Inspected
+          </button>
+          <button class="wf-btn wf-pending" onclick="setStatusFromDrawer('InProgress')">
+            <i class="fas fa-clock"></i> In Progress
+          </button>
+          <button class="wf-btn wf-fixed" onclick="setStatusFromDrawer('Resolved')">
+            <i class="fas fa-circle-check"></i> Resolved
+          </button>
         </div>
 
         <div class="proof-section" id="proofSection" style="display:none">
@@ -139,50 +141,52 @@
             <small>PNG, JPG — clearly shows the fix</small>
           </div>
           <input type="file" id="proofInput" accept="image/*" style="display:none" onchange="handleProofUpload(this)" />
+          
           <div id="proofPreview" class="proof-preview" style="display:none">
             <img id="proofPreviewImg" src="" alt="Proof" />
             <button class="remove-proof" onclick="removeProof()"><i class="fas fa-times"></i></button>
           </div>
+          
           <button class="btn-confirm-fixed" onclick="confirmFixed()">
-            <i class="fas fa-check-circle"></i> Confirm & Mark as Fixed
+            <i class="fas fa-check-circle"></i> Confirm & Close Issue
           </button>
         </div>
       </div>
-
     </div>
   </div>
 
   <div id="toast"></div>
+
   <div class="status-modal-overlay" id="statusModal" onclick="closeModal(event)">
-  <div class="status-modal-card">
-    <div class="status-modal-header">
-      <h3 id="modalReportTitle">Report</h3>
-      <button class="drawer-close" onclick="document.getElementById('statusModal').classList.remove('open'); activeModalId = null;">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div class="status-modal-body">
-      <label class="workflow-label">Select New Status</label>
-      <select id="modalStatusSelect" class="status-select">
-        <option value="">— Choose status —</option>
-        <option value="Reported">Reported</option>
-        <option value="Inspected">Inspected</option>
-        <option value="InProgress">In Progress</option>
-        <option value="InProgress">Resolved</option>
-      </select>
-    </div>
-    <div class="status-modal-footer">
-      <button class="wf-btn wf-pending" onclick="setStatus(document.getElementById('modalStatusSelect').value)">
-        <i class="fas fa-check"></i> Apply
-      </button>
+    <div class="status-modal-card">
+      <div class="status-modal-header">
+        <h3 id="modalReportTitle">Update Status</h3>
+        <button class="drawer-close" onclick="document.getElementById('statusModal').classList.remove('open'); activeModalId = null;">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="status-modal-body">
+        <label class="workflow-label">Select New Status</label>
+        <select id="modalStatusSelect" class="status-select">
+          <option value="">— Choose status —</option>
+          <option value="Reported">Reported</option>
+          <option value="Inspected">Inspected</option>
+          <option value="InProgress">In Progress</option>
+          <option value="Resolved">Resolved</option>
+        </select>
+      </div>
+      <div class="status-modal-footer">
+        <button class="wf-btn wf-pending" onclick="setStatus(document.getElementById('modalStatusSelect').value)">
+          <i class="fas fa-check"></i> Apply Change
+        </button>
+      </div>
     </div>
   </div>
-</div>
+
   <script src="{{ url_for('static', filename='include.js') }}"></script>
   <script src="{{ url_for('static', filename='sidebar-template.js') }}"></script>
   <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
   <script src="{{ url_for('static', filename='allreports.js') }}"></script>
 
 </body>
-
 </html>
