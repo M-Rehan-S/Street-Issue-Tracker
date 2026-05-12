@@ -29,10 +29,7 @@ def load_dashboard():
         return redir
     try:
         reports = []
-        if session.get('role', '').lower() == 'Citizen'.lower():
-            reports = Report.query.filter_by(SubmitterID=session.get('UID'), Category = 'Pothole').order_by(Report.CreatedAt.desc()).all()
-        else:
-            reports = Report.query.filter_by(Category = 'Pothole').order_by(Report.CreatedAt.desc()).all()
+        reports = Report.query.filter_by(SubmitterID=session.get('UID'), Category = 'Pothole').order_by(Report.CreatedAt.desc()).all()
         recent_report = None
         if session.get('role', '').lower() == 'Citizen'.lower():
             recent_report = Report.query.filter_by(SubmitterID=session.get('UID')).order_by(Report.CreatedAt.desc()).first()
@@ -45,7 +42,7 @@ def load_dashboard():
             'date': report.CreatedAt.isoformat(sep=' ', timespec='minutes'),
             'image_url': report.ImageURL
         } for report in reports]
-        total = len(return_reports)
+        total = Report.query.count()
         trending = Report.query.order_by(Report.VoteCount.desc()).limit(7).all()
         trending_reports = [{
             'location': trending.Location,

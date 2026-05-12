@@ -191,3 +191,22 @@ def inspection_routes():
             'ImageURL': r.ImageURL
         } for r in reports
     ]})
+
+@api_bp.route('/manage-admins/list')
+def list_admins():
+    err = _require_super_admin()
+    if err:
+        return err
+    try:
+        admins = User.query.filter(User.Role == 'Admin').all()
+        return jsonify({'success': True, 'admins': [
+            {
+                'username' : a.Name,
+                'cnic' : a.CNIC,
+                'email' : a.Email,
+                'phone' : a.PhoneNumber,
+                'uid' : a.UserID
+            } for a in admins
+        ]})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
