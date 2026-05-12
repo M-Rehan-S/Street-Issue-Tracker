@@ -19,7 +19,7 @@ def register():
         if User.query.filter((User.Name == username) | (User.CNIC == cnic)).first():
             flash("Username already exists! OR CNIC Already Registered")
             return redirect(url_for('dashboard.home'))
-
+        print('Me idher aarha hu')
         db.session.add(User(Name = username, CNIC = cnic, PasswordHash = password, Role = 'Citizen'))
         db.session.commit()
 

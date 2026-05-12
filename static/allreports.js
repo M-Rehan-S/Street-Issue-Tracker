@@ -4,18 +4,19 @@ let allReports = [];    // full data from DB
 let likedSet = new Set(JSON.parse(localStorage.getItem('likedReports') || '[]'));
 let activeModalId = null;
 const API = getApi();
-// Function for fetching allreports
 
-function getAllReports() {
-
-
-
-
-
+async function addVote(reportId, userId) {
+  try {
+    const res = await fetch(`${API}/report/like/${reportId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId })
+    });
+    if (!res.ok) throw new Error('Failed to add vote');
+  } catch (e) {
+    console.error('Error adding vote:', e);
+  }
 }
-
-
-
 
 /* ── Visibility score: VoteCount drive ranking ── */
 function visibilityScore(r) {
