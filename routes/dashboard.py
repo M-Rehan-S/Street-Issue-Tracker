@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session
+from flask import Blueprint, jsonify, render_template, redirect, url_for, flash, session
 dashboard_bp = Blueprint('dashboard', __name__)
-
+from models import Report
 
 def _login_required():
     """Return a redirect if the user is not logged in, else None."""
@@ -21,6 +21,40 @@ def dashboard():
     if redir:
         return redir
     return render_template('dashboard.html')
+
+@dashboard_bp.route('/loadDashboard')
+def load_dashboard():
+    redir = _login_required()
+    if redir:
+        return redir
+    try:
+        reports = Report.query.filter_by(SubmitterID=session.get('UID'), Category = 'Pothole').order_by(Report.CreatedAt.desc()).all()
+        return_reports = [{
+            'location': report.Location,
+            'category': report.Category,
+            'status': report.Status,
+            'date': report.CreatedAt.isoformat(),
+            'image_url': report.ImageURL
+        } for report in reports]
+        total = len(return_reports)
+        recent_report = Report.query.filter_by(SubmitterID=session.get('UID')).order_by(Report.CreatedAt.desc()).first()
+        return jsonify({'success': True, 'your_reports': return_reports, 'stats' : {
+            'total': total,
+            'fixed': len([r for r in return_reports if r['status'] == 'Resolved']),
+            'pending': len([r for r in return_reports if r['status'] == 'InProgress']),
+            'open' : len([r for r in return_reports if r['status'] == 'Reported'])
+        },
+        'recent_report': {
+            'location': recent_report.Location,
+            'category': recent_report.Category,
+            'status': recent_report.Status,
+            'date': recent_report.CreatedAt.isoformat(),
+            'image_url': recent_report.ImageURL
+        } if recent_report else None
+        }
+        )
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
 
 
 @dashboard_bp.route('/report-issue', methods=['GET'])

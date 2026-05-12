@@ -18,7 +18,7 @@ function issueHtml(r) {
 async function loadDashboard() {
     const API = getApi();
     try {
-        const res = await fetch(API + '/dashboard');
+        const res = await fetch(API + '/loadDashboard');
         const d = await res.json();
 
         // Stats
