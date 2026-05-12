@@ -220,3 +220,18 @@ def list_admins():
         ]})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
+    
+@api_bp.route('/inspection/override/<uuid:report_id>', methods=['POST'])
+def override_inspection(report_id):
+    err = _require_super_admin()
+    if err:
+        return err
+    try:
+        report = Report.query.get(report_id)
+        if report:
+            report.Status = 'Inspected'
+            db.session.commit()
+        return jsonify({'success': True})
+
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
