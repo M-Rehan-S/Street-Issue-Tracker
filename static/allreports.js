@@ -166,9 +166,9 @@ function clearFilters() {
 }
 
 function isPrivileged() {
-  const sidebar = document.getElementById('sidebar')
-  const role = sidebar ? sidebar.dataset.role : 'citizen';
-  return role !== 'citizen';
+  const sidebar = document.getElementById('sidebar');
+  const role = (sidebar ? sidebar.dataset.role : 'citizen').toLowerCase();
+  return role === 'admin' || role === 'superadmin';
 }
 /* ── Admin modal ── */
 function openModal(id, categoryName) {

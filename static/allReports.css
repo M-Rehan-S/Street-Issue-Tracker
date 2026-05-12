@@ -93,22 +93,21 @@
 /* ── 3-col card grid ── */
 .reports-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
 }
 
 /* ── Report card ── */
 .report-card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
-    border-radius: var(--rad);
+    border-radius: 10px;
     overflow: hidden;
     cursor: pointer;
     position: relative;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
 }
 
 .report-card:hover {
@@ -117,30 +116,38 @@
     box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
 }
 
-.card-img-top {
+/* card-img: container that makes ANY image fill the slot cleanly */
+.card-img {
     width: 100%;
-    height: 160px;
-    object-fit: cover;
-    display: block;
-}
-
-.card-img-placeholder {
-    width: 100%;
-    height: 160px;
+    height: 130px;                  /* slightly shorter for compact cards */
+    overflow: hidden;
+    flex-shrink: 0;
     background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid var(--card-border);
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--tm);
-    border-bottom: 1px solid var(--card-border);
+    font-size: 26px;
+}
+
+.card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;     /* large images: crop to fill */
+    object-position: center;
+    display: block;
+    /* small images: scale up to fill rather than leaving white gaps */
+    min-width: 100%;
+    min-height: 100%;
 }
 
 .card-body {
-    padding: 16px 18px;
+    padding: 12px 14px;
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 7px;
 }
 
 .card-top {
@@ -152,7 +159,7 @@
 
 .card-category {
     font-family: 'Syne', sans-serif;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 800;
     color: var(--tp);
 }
@@ -199,12 +206,12 @@
 }
 
 .card-footer {
-    padding: 11px 18px;
+    padding: 9px 14px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 6px;
 }
 
 .like-btn {
@@ -651,3 +658,220 @@
     cursor: not-allowed;
     transform: none;
 }
+/* ══════════════════════════════════════════
+   ADMIN CONTROLS STRIP  (card bottom — admin/superadmin only)
+   The JS renders this; CSS was missing it before.
+══════════════════════════════════════════ */
+.admin-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(249, 115, 22, 0.06);
+    border-top: 1px solid rgba(249, 115, 22, 0.18);
+}
+
+.admin-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-change-status {
+    background: rgba(249, 115, 22, 0.1);
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    color: var(--accent);
+    border-radius: 7px;
+    padding: 5px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: background 0.2s;
+}
+
+.btn-change-status:hover {
+    background: rgba(249, 115, 22, 0.22);
+}
+
+/* ── visibility bar: JS uses .visibility-bar-wrap / .visibility-label / .visibility-bar / .visibility-fill
+   CSS had .vis-* names — add the correct aliases ── */
+.visibility-bar-wrap {
+    flex: 1;
+    max-width: 80px;
+}
+
+.visibility-label {
+    font-size: 10px;
+    color: var(--tm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 3px;
+}
+
+.visibility-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.visibility-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #22c55e, #f97316, #f87171);
+    transition: width 0.5s ease;
+}
+
+/* ══════ STATUS CHANGE MODAL ══════ */
+.status-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-modal-overlay.open {
+    display: flex;
+}
+
+.status-modal-card {
+    background: #1c2a38;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 24px;
+    width: 100%;
+    max-width: 340px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.status-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.status-modal-header h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--tp);
+    margin: 0;
+}
+
+.status-select {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 9px;
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--tp);
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+}
+
+.status-select:focus { border-color: var(--accent); }
+.status-select option { background: #1c2a38; }
+
+.status-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+
+/* 3 columns on medium desktops / small laptops */
+@media (max-width: 1280px) {
+    .reports-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* 2 columns on tablets */
+@media (max-width: 900px) {
+    .reports-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+
+    .filter-bar {
+        gap: 12px;
+        padding: 14px 16px;
+    }
+
+    .filter-group {
+        min-width: 130px;
+    }
+}
+
+/* 1 column on phones */
+@media (max-width: 540px) {
+    .reports-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 12px 14px;
+    }
+
+    .filter-group {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .btn-clear {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .card-img {
+        height: 160px;   /* taller on single-col so image has room */
+    }
+
+    .card-footer {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .visibility-bar-wrap {
+        max-width: 100%;
+        width: 100%;
+        order: 2;
+    }
+
+    .admin-controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .btn-change-status {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
