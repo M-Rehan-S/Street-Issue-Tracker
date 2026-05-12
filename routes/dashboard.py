@@ -34,7 +34,7 @@ def load_dashboard():
             'location': report.Location,
             'category': report.Category,
             'status': report.Status,
-            'date': report.CreatedAt.isoformat(),
+            'date': report.CreatedAt.isoformat(sep=' ', timespec='minutes'),
             'image_url': report.ImageURL
         } for report in reports]
         total = len(return_reports)
@@ -43,7 +43,7 @@ def load_dashboard():
             'location': trending.Location,
             'category': trending.Category,
             'status': trending.Status,
-            'date': trending.CreatedAt.isoformat(),
+            'date': trending.CreatedAt.isoformat(sep=' ', timespec='minutes'),
             'image_url': trending.ImageURL
         } for trending in trending]
         return jsonify({'success': True, 'your_reports': return_reports, 'stats' : {
@@ -56,7 +56,7 @@ def load_dashboard():
             'location': recent_report.Location,
             'category': recent_report.Category,
             'status': recent_report.Status,
-            'date': recent_report.CreatedAt.isoformat(),
+            'date': recent_report.CreatedAt.isoformat(sep=' ', timespec='minutes'),
             'image_url': recent_report.ImageURL
         } if recent_report else None,
         'most_faced' : trending_reports

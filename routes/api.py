@@ -158,7 +158,7 @@ def reports():
             'Category': r.Category,
             'AIConfidenceScore': r.AIConfidenceScore,
             'Status': r.Status,
-            'CreatedAt': r.CreatedAt.isoformat(),
+            'CreatedAt': r.CreatedAt.isoformat(sep=' ', timespec='minutes'),
             'VoteCount': r.VoteCount, 
             'Description': r.Description,
             'Location': r.Location, 
