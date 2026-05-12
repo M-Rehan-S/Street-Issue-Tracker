@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session, current_app
 from extensions import db
-from services import get_ml_service
+from services import get_ml_service, get_nearby_duplicates
 from models import User, Report
 
 
@@ -65,7 +65,7 @@ def change():
 
 
 # ------------------------------------------------------------------
-# ML inference
+# Report Method
 # ------------------------------------------------------------------
 
 @api_bp.route('/report', methods=['POST'])
@@ -79,15 +79,25 @@ def report():
         model_path = current_app.config['MODEL_PATH']
         ml         = get_ml_service(model_path)
         result     = ml.predict(image.stream)
+        latitude   = request.form.get('latitude')
+        longitude  = request.form.get('longitude')
 
         # Save the report to the database
         if result.get('label') == 'Normal':
             return jsonify({'success': True, **result})  # No need to save normal reports
+        
+        # Spatial Query running here to check if there's an existing report within some distance
+        
+        near_reports = get_nearby_duplicates(latitude, longitude, 'Pothole', radius=100)
+
+        if near_reports:
+            return jsonify({'success': True, 'message': 'Similar issue reported nearby.', 'nearby_duplicates': near_reports})
+
         user_id = session.get('UID')
         new_report = Report(SubmitterID=user_id, Category=result.get('label'), AIConfidenceScore=result.get('confidence'), Status=('Reported' if result.get('confidence')<80 else 'Inspected'))
         db.session.add(new_report)
         db.session.commit()
-        return jsonify({'success': True, **result})
+        return jsonify({'success': True, **result, 'nearby_duplicates': []})
 
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
