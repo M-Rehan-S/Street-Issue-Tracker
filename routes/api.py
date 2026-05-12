@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, session, current_app
-from extensions import mysql, db
+from extensions import db
 from services import get_ml_service
 from models import User, Report
 
@@ -43,41 +43,6 @@ def change():
             return jsonify({'success': False, 'error': 'At least one field is required.'})
 
         user_id     = session.get('UID')
-        # set_clauses = []
-        # params      = []
-
-        # if username:
-        #     cur = mysql.connection.cursor()
-        #     cur.execute("SELECT UID FROM Users WHERE Username = %s", (username,))
-        #     existing = cur.fetchone()
-        #     cur.close()
-        #     if existing and existing[0] != user_id:
-        #         return jsonify({'success': False, 'error': 'Username is already taken.'})
-        #     set_clauses.append("Username = %s")
-        #     params.append(username)
-
-        # if password:
-        #     set_clauses.append("Password = %s")
-        #     params.append(password)
-
-        # if phone:
-        #     set_clauses.append("Phone_Number = %s")
-        #     params.append(phone)
-
-        # if email:
-        #     set_clauses.append("Email = %s")
-        #     params.append(email)
-
-        # params.append(user_id)
-        # sql = "UPDATE Users SET {} WHERE UID = %s".format(', '.join(set_clauses))
-
-        # cur = mysql.connection.cursor()
-        # cur.execute(sql, tuple(params))
-        # mysql.connection.commit()
-        # cur.close()
-
-        # Postgres equivalent using SQLAlchemy ORM: 
-
         user = User.query.get(user_id)
         if user:
             if username and username != user.Username:
@@ -141,16 +106,6 @@ def get_roles():
     try:
         roles = [{'id' : 1, 'name' : 'Admin'}]       
         return jsonify({'success': True, 'roles': roles})
-        # cur = mysql.connection.cursor()
-        # cur.execute(
-        #     "SELECT RID, R_Name FROM Role "
-        #     "WHERE NOT (R_NAME = 'Citizen' OR R_NAME = 'Super Admin') "
-        #     "ORDER BY RID ASC"
-        # )
-        # rows = cur.fetchall()
-        # cur.close()
-        # roles = [{'id': row[0], 'name': row[1]} for row in rows]
-        # return jsonify({'success': True, 'roles': roles})
 
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
@@ -180,32 +135,19 @@ def add_member():
         db.session.add(User(Name = username, CNIC = cnic, PasswordHash = passcode, Role = role_name, Email = email, PhoneNumber = phone))
         db.session.commit()
 
-
-        # cur = mysql.connection.cursor()
-        # cur.execute(
-        #     "SELECT UID FROM Users WHERE Username = %s OR CNIC = %s",
-        #     (username, cnic)
-        # )
-        # if cur.fetchone():
-        #     cur.close()
-        #     return jsonify({'success': False, 'error': 'Username or CNIC already exists.'})
-
-        # cur2 = mysql.connection.cursor()
-        # cur2.execute("SELECT RID FROM Role WHERE RID = %s", (role_id,))
-        # if not cur2.fetchone():
-        #     cur2.close()
-        #     cur.close()
-        #     return jsonify({'success': False, 'error': 'Selected department does not exist.'})
-        # cur2.close()
-
-        # cur.execute(
-        #     "INSERT INTO Users(Username, Password, CNIC, Email, Phone_Number, RID) "
-        #     "VALUES(%s, %s, %s, %s, %s, %s)",
-        #     (username, passcode, cnic, email, phone, role_id)
-        # )
-        # mysql.connection.commit()
-        # cur.close()
         return jsonify({'success': True})
 
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
+
+
+@api_bp.route('/reports')
+def reports():
+    err = _require_login()
+    if err:
+        return err
+    try:
+        reports = Report.query.all().order_by(Report.VoteCount.desc()).limit(10)
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+    return jsonify({'success': True, 'reports': reports})

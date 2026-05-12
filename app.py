@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 from config import Config
-from extensions import db, migrate, mysql, cors
+from extensions import db, migrate, cors
 from models import report_audit_log, user, report, vote
 from routes import auth_bp, dashboard_bp, api_bp
 
@@ -13,7 +13,6 @@ def create_app(config_class=Config) -> Flask:
 
     db.init_app(app)
     migrate.init_app(app, db)
-    mysql.init_app(app)
     cors.init_app(app)
 
     app.register_blueprint(auth_bp)

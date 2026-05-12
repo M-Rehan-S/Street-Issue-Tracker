@@ -71,3 +71,5 @@ def add_member_page():
         flash("Access denied. Admins only.")
         return redirect(url_for('dashboard.dashboard'))
     return render_template('members.html')
+
+
