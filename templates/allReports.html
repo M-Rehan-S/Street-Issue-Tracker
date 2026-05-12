@@ -6,12 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>All Reports — Street Issue Tracker</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}"/>
-  <link rel="stylesheet" href="{{ url_for('static', filename='allReports.css') }}"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='allReports.css') }}" />
 </head>
- 
+
 <body>
-  <nav id="sidebar" data-page="all-reports"  data-username="{{session['username'] }}"  data-role = "{{ session['role']}}" ></nav>
+  <nav id="sidebar" data-page="all-reports" data-username="{{session['username'] }}" data-role="{{ session['role']}}">
+  </nav>
   <main id="main">
 
     <div class="page-header">
@@ -151,10 +152,10 @@
   </div>
 
   <div id="toast"></div>
+  <script src="{{ url_for('static', filename='include.js') }}"></script>
   <script src="{{ url_for('static', filename='sidebar-template.js') }}"></script>
   <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
   <script src="{{ url_for('static', filename='allreports.js') }}"></script>
-  <script src="{{ url_for('static', filename='include.js') }}"></script>
 
 </body>
 

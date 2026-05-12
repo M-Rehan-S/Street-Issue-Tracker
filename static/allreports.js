@@ -3,7 +3,7 @@
 let allReports = [];    // full data from DB
 let likedSet = new Set(JSON.parse(localStorage.getItem('likedReports') || '[]'));
 let activeModalId = null;
-
+const API = getApi();
 // Function for fetching allreports
 
 function getAllReports() {
@@ -65,7 +65,7 @@ function buildCard(r, maxL) {
         <div class="card-top">
           <div>
             <div class="card-category">${r.Category || 'Issue'}</div>
-            <div class="card-location"><i class="fas fa-location-dot"></i> ${r.location || '—'}</div>
+            <div class="card-location"><i class="fas fa-location-dot"></i> ${r.Location || '—'}</div>
           </div>
           ${badgeHtml(r.Status)}
         </div>
@@ -97,7 +97,7 @@ function buildCard(r, maxL) {
 function renderGrid(reports) {
   const grid = document.getElementById('reportsGrid');
   const meta = document.getElementById('resultsMeta');
-  console.log('Reports ki length : ', reports.length);
+  // console.log('Reports ki length : ', reports.length);
   if (!reports || reports.length === 0) {
     grid.innerHTML = `<div style="grid-column:1/-1">${emptyHtml('No reports match your filters.')}</div>`;
     meta.innerHTML = '';
@@ -210,9 +210,11 @@ async function setStatus(newStatus) {
 /* ── Load from DB ── */
 async function loadAllReports() {
   try {
+    console.log('Fetching all reports from backend...');
     const res = await fetch(API + '/reports');
     const data = await res.json();
     allReports = data.reports || [];
+    console.log('All Reports loaded:', allReports.length);
     renderGrid(allReports);
   } catch (e) {
     document.getElementById('reportsGrid').innerHTML =

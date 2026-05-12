@@ -147,7 +147,20 @@ def reports():
     if err:
         return err
     try:
-        reports = Report.query.all().order_by(Report.VoteCount.desc()).limit(10)
+        reports = Report.query.order_by(Report.VoteCount.desc()).limit(10).all()
+        print('Reports count', len(reports))
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
-    return jsonify({'success': True, 'reports': reports})
+    return jsonify({'success': True, 'reports': [
+        {
+            'ReportID': r.ReportID,
+            'SubmitterID': r.SubmitterID,
+            'Category': r.Category,
+            'AIConfidenceScore': r.AIConfidenceScore,
+            'Status': r.Status,
+            'CreatedAt': r.CreatedAt.isoformat(),
+            'VoteCount': r.VoteCount, 
+            'Description': r.Description,
+            'Location': r.Location
+        } for r in reports
+    ]})
