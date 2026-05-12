@@ -11,8 +11,9 @@ def register():
         username = request.form.get('username')
         password = request.form.get('password')
         cnic     = request.form.get('CNIC')
+        email    = request.form.get('email')
 
-        if not username or not password or not cnic:
+        if not username or not password or not cnic or not email:
             flash("All fields are required!")
             return redirect(url_for('dashboard.home'))
         

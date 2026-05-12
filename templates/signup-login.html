@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='footer.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
- 
+
 <body>
     <nav class="navbar">
         <div class="nav-brand">
@@ -46,11 +46,11 @@
                                 <h2>Login</h2>
                                 <div class="input-field">
                                     <i class="fas fa-user"></i>
-                                    <input type="text" name = "username" placeholder="Username" />
+                                    <input type="text" name="username" placeholder="Username" />
                                 </div>
                                 <div class="input-field">
                                     <i class="fas fa-lock"></i>
-                                    <input type="password"  name = "password" placeholder="Password" />
+                                    <input type="password" name="password" placeholder="Password" />
                                 </div>
                                 <button type="submit" class="btn">Login</button>
                                 <p class="social-text">Don't have an account? <a href="#" class="toggle-form">Sign
@@ -60,15 +60,23 @@
                                 <h2>Sign Up</h2>
                                 <div class="input-field">
                                     <i class="fas fa-user"></i>
-                                    <input type="text" name = "username" placeholder="Username" />
+                                    <input type="text" name="username" placeholder="Username" />
                                 </div>
                                 <div class="input-field">
                                     <i class="fas fa-envelope"></i>
-                                    <input type="text" name = "CNIC" id= "cnic" placeholder="CNIC" />
+                                    <input type="text" name="email" placeholder="Email" />
+                                </div>
+                                <div class="input-field">
+                                    <i class="fas fa-envelope"></i>
+                                    <input type="text" name="CNIC" id="cnic" placeholder="CNIC" />
+                                </div>
+                                <div class="input-field">
+                                    <i class="fas fa-phone"></i>
+                                    <input type="text" name="PhoneNo" id="phone" placeholder="PhoneNumber" />
                                 </div>
                                 <div class="input-field">
                                     <i class="fas fa-lock"></i>
-                                    <input type="password" name = "password" placeholder="Password" />
+                                    <input type="password" name="password" placeholder="Password" />
                                 </div>
                                 <button type="submit" class="btn">Sign up</button>
                                 <p class="social-text">Already have an account? <a href="#"
@@ -113,7 +121,7 @@
     </footer>
     <script src="{{ url_for('static', filename='responsive.js') }}"></script>
     <script src="{{ url_for('static', filename='signup-login.js') }}"></script>
-      <script src="{{ url_for('static', filename='include.js') }}"></script>
+    <script src="{{ url_for('static', filename='include.js') }}"></script>
 </body>
 
 </html>

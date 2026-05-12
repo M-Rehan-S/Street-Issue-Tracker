@@ -21,7 +21,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const cnicInput = document.getElementById('cnic');
     if (cnicInput) formatCNIC(cnicInput);
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput) formatPhone(phoneInput);
 });
+
+function formatPhone(input) {
+    input.addEventListener('input', function () {
+        let digits = this.value.replace(/\D/g, '');
+        if (digits.length > 11) digits = digits.slice(0, 11);
+        let formatted = '';
+        if (digits.length <= 4) {
+            formatted = digits;
+        } else if (digits.length <= 7) {
+            formatted = digits.slice(0, 4) + '-' + digits.slice(4);
+        } else {
+            formatted = digits.slice(0, 4) + '-' + digits.slice(4, 7) + '-' + digits.slice(7);
+        }
+        this.value = formatted;
+    });
+}
 
 function formatCNIC(input) {
     input.addEventListener('input', function () {
