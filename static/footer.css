@@ -1,4 +1,6 @@
 .footer {
+    background-color: #0a1018;       /* solid dark bg so it's visible */
+    border-top: 1px solid rgba(255,255,255,0.07);
     color: #fff;
     padding: 40px 0 20px;
     margin-top: auto;
@@ -8,7 +10,7 @@
     max-width: 1200px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 30px;
     padding: 0 20px;
 } 
