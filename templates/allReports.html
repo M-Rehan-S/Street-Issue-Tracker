@@ -11,7 +11,8 @@
 </head>
 
 <body>
-  <nav id="sidebar" data-page="all-reports" data-username="{{session['username']}}" data-role="{{ session['role']}}"></nav>
+  <nav id="sidebar" data-page="all-reports" data-username="{{session['username']}}" data-role="{{ session['role']}}">
+  </nav>
 
   <main id="main">
     <div class="page-header">
@@ -42,7 +43,6 @@
           <option>Reported</option>
           <option>Inspected</option>
           <option>InProgress</option>
-          <option>Resolved</option>
         </select>
       </div>
 
@@ -141,12 +141,12 @@
             <small>PNG, JPG — clearly shows the fix</small>
           </div>
           <input type="file" id="proofInput" accept="image/*" style="display:none" onchange="handleProofUpload(this)" />
-          
+
           <div id="proofPreview" class="proof-preview" style="display:none">
             <img id="proofPreviewImg" src="" alt="Proof" />
             <button class="remove-proof" onclick="removeProof()"><i class="fas fa-times"></i></button>
           </div>
-          
+
           <button class="btn-confirm-fixed" onclick="confirmFixed()">
             <i class="fas fa-check-circle"></i> Confirm & Close Issue
           </button>
@@ -161,7 +161,8 @@
     <div class="status-modal-card">
       <div class="status-modal-header">
         <h3 id="modalReportTitle">Update Status</h3>
-        <button class="drawer-close" onclick="document.getElementById('statusModal').classList.remove('open'); activeModalId = null;">
+        <button class="drawer-close"
+          onclick="document.getElementById('statusModal').classList.remove('open'); activeModalId = null;">
           <i class="fas fa-times"></i>
         </button>
       </div>
@@ -189,4 +190,5 @@
   <script src="{{ url_for('static', filename='allreports.js') }}"></script>
 
 </body>
+
 </html>

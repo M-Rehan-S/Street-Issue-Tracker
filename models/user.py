@@ -15,7 +15,7 @@ class User(db.Model):
     Role           = db.Column(user_role_enum)
     CreatedAt      = db.Column(db.DateTime, server_default=func.now())
     AssignedRegion = db.Column(db.String(100))
-    CNIC          = db.Column(db.String(15), unique=True)
+    CNIC           = db.Column(db.String(15), unique=True)
     PhoneNumber    = db.Column(db.String(20), nullable=True)
 
     reports = db.relationship('Report', backref='submitter', lazy=True)

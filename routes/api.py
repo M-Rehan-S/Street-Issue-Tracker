@@ -3,6 +3,7 @@ from extensions import db
 from services import get_ml_service, get_nearby_duplicates
 from models import User, Report, Vote
 from werkzeug.utils import secure_filename
+from sqlalchemy import text
 import os
 
 
@@ -121,6 +122,41 @@ def report():
 
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
+
+@api_bp.route('/report/<uuid:report_id>/status', methods=['PATCH'])
+def update_report_status(report_id):
+    data = request.get_json()
+
+    if not data or 'status' not in data:
+        return jsonify({"success": False, "error": "Missing status data"}), 400
+
+    new_status = data.get('status')
+
+    try:
+        report = Report.query.filter(Report.ReportID == report_id).first()
+        if not report:
+            return jsonify({'success': False, 'error': 'Report Not Found'})
+        # Convert the UUID object to a string explicitly
+        admin_id_str = str(session.get('UID'))
+
+        # Use the quote format required by SET LOCAL
+        db.session.execute(
+            text("SELECT set_config('app.current_admin_id', :admin_id, true)"),
+            {'admin_id': admin_id_str}
+        )
+        report.Status = new_status
+        db.session.commit()
+        print(f"Updating Report {report_id} to {new_status}") 
+
+        return jsonify({
+            "success": True, 
+            "message": f"Status updated to {new_status}"
+        }), 200
+
+
+    except Exception as e:
+        print(f"Database error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 # ------------------------------------------------------------------

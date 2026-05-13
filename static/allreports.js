@@ -172,27 +172,52 @@ function closeModal(e) {
 }
 
 async function setStatus(newStatus) {
-  if (!activeModalId) return;
+  // 1. Validation
+  if (!activeModalId || !newStatus) return;
+
   const report = allReports.find(r => r.ReportID == activeModalId);
   if (!report) return;
 
+  // Save the ID to a local constant so it doesn't disappear 
+  // if activeModalId changes elsewhere
+  const currentId = activeModalId;
+
+  // 2. Optimistic UI Update
+  const oldStatus = report.status; // Save old status in case we need to roll back
   report.status = newStatus;
 
-  /* Optimistic UI */
+  // Update the UI immediately
   applyFilters();
-  document.getElementById('statusModal').classList.remove('open');
-  showToast(`Status updated to "${newStatus}"`);
 
-  /* PATCH to backend */
+  // Update the badge in the drawer if it exists
+  const drawerBadge = document.getElementById('drawerBadge');
+  if (drawerBadge) drawerBadge.innerText = newStatus;
+
+  document.getElementById('statusModal').classList.remove('open');
+  showToast('Status updated to "${newStatus}"');
+  ``
+  // 3. PATCH to backend
   try {
-    await fetch(`${API}/report/${activeModalId}/status`, {
+    const response = await fetch(API + '/report/' + currentId + '/status', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus })
     });
-  } catch (e) { /* offline — local state already updated */ }
 
-  activeModalId = null;
+    if (!response.ok) {
+      throw new Error('Server update failed');
+    }
+
+    // Success! Now we can safely clear the active ID
+    activeModalId = null;
+
+  } catch (e) {
+    // 4. Rollback (Crucial for Optimistic UI)
+    console.error("Backend update failed:", e);
+    report.status = oldStatus; // Put the old status back
+    applyFilters(); // Refresh UI to show the truth
+    showToast("Failed to save to server. Reverting change.", "#f87171");
+  }
 }
 
 /* ── Load from DB ── */
