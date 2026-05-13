@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, session, current_app
+from flask import Blueprint, request, jsonify, session, current_app, send_from_directory
 from extensions import db
 from services import get_ml_service, get_nearby_duplicates
 from models import User, Report, Vote
@@ -110,7 +110,7 @@ def report():
         # This is just a harcocde image url for testing
         filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
         image.save(filepath)
-        image_url = f"/{filepath}" 
+        image_url = f"{filepath}" 
         new_report = Report(SubmitterID=user_id, Category=result.get('label'),
                             AIConfidenceScore=result.get('confidence'),
                             Status=('Reported' if result.get('confidence')<80 else 'Inspected'),
@@ -326,3 +326,10 @@ def remove_vote(report_id):
         return jsonify({'success': True, 'message': 'Vote removed.'})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
+    
+@api_bp.route('/uploads/<filename>')
+def uploaded_file(filename):
+    UPLOAD_FOLDER = os.getenv('UPLOAD_DIRECTORY')
+    if not UPLOAD_FOLDER:
+        return "Upload directory not configured", 500
+    return send_from_directory(UPLOAD_FOLDER, filename)

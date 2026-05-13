@@ -27,10 +27,14 @@ function buildCard(r, maxL) {
   const desc = r.Description || '';
 
   /* Image */
-  const imgSection = r.ImageURL
-    ? `<div class="card-img"><img src="${r.ImageURL}" alt="Issue photo"/></div>`
-    : `<div class="card-img"><i class="fas fa-image"></i></div>`;
+const BASE_URL = "http://127.0.0.1:5000";
 
+// This takes "/home/user/project/uploads/5.jpg" and turns it into "5.jpg"
+const filename = r.ImageURL ? r.ImageURL.split('/').pop() : null;
+
+const imgSection = filename
+    ? `<div class="card-img"><img src="${BASE_URL}/uploads/${filename}" alt="Issue photo"/></div>`
+    : `<div class="card-img"><i class="fas fa-image"></i></div>`;
   /* Hot badge */
   const hotBadge = isHot
     ? `<div class="hot-badge"><i class="fas fa-fire"></i> Trending</div>`
