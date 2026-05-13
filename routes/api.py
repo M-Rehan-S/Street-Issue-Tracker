@@ -87,6 +87,8 @@ def report():
         result     = ml.predict(image.stream)
         latitude   = request.form.get('latitude')
         longitude  = request.form.get('longitude')
+        location  = request.form.get('location')
+        description = request.form.get('description')
 
         # Save the report to the database
         if result.get('label') == 'Normal':
@@ -100,7 +102,13 @@ def report():
             return jsonify({'success': True, 'message': 'Similar issue reported nearby.', 'nearby_duplicates': near_reports})
 
         user_id = session.get('UID')
-        new_report = Report(SubmitterID=user_id, Category=result.get('label'), AIConfidenceScore=result.get('confidence'), Status=('Reported' if result.get('confidence')<80 else 'Inspected'))
+        # This is just a harcocde image url for testing
+        image_url = "https://imgs.search.brave.com/Ln-0KQCeMnmE61pjWLzpusWfQZzZH8R15sJXjVZn3hg/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJhY2Nlc3Mu/Y29tL2Z1bGwvODQx/MjU4Ny5qcGc"
+        new_report = Report(SubmitterID=user_id, Category=result.get('label'),
+                            AIConfidenceScore=result.get('confidence'),
+                            Status=('Reported' if result.get('confidence')<80 else 'Inspected'),
+                            Latitude=latitude, Longitude=longitude, Location = location,
+                            ImageURL = image_url, Description = description)
         db.session.add(new_report)
         db.session.commit()
         return jsonify({'success': True, **result, 'nearby_duplicates': []})

@@ -43,7 +43,7 @@ def load_dashboard():
             'image_url': report.ImageURL
         } for report in reports]
         total = Report.query.count()
-        trending = Report.query.order_by(Report.VoteCount.desc()).limit(7).all()
+        trending = Report.query.filter(Report.VoteCount > 0).order_by(Report.VoteCount.desc()).limit(7).all()
         trending_reports = [{
             'location': trending.Location,
             'category': trending.Category,

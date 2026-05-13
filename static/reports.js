@@ -19,41 +19,41 @@ function handleUpload(input) {
             : Math.round(kb) + ' KB';
 
         /* Hide upload area, show thumbnail pill */
-        document.getElementById('uploadArea').style.display   = 'none';
+        document.getElementById('uploadArea').style.display = 'none';
         document.getElementById('imagePreview').style.display = 'inline-flex';
     }
 }
 
 function removeImage() {
-    document.getElementById('repImage').value                  = '';
-    document.getElementById('previewImg').src                  = '';
-    document.getElementById('previewFilename').textContent     = '';
-    document.getElementById('previewFilesize').textContent     = '';
+    document.getElementById('repImage').value = '';
+    document.getElementById('previewImg').src = '';
+    document.getElementById('previewFilename').textContent = '';
+    document.getElementById('previewFilesize').textContent = '';
 
     /* Show upload area again, hide thumbnail pill */
-    document.getElementById('uploadArea').style.display   = 'flex';
+    document.getElementById('uploadArea').style.display = 'flex';
     document.getElementById('imagePreview').style.display = 'none';
 }
 
 function getLocation() {
-    if (navigator.geolocation) {
+    console.log("Requesting location..."); // Step 1: See if the function starts
+    return new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                const lat = position.coords.latitude;
-                const lon = position.coords.longitude;
-                console.log(`Latitude: ${lat}, Longitude: ${lon}`);
-                
-                // Now send this data to your Flask backend
-                return (lat, lon);
+                console.log("Success!"); // Step 2: See if it succeeds
+                resolve({ lat: position.coords.latitude, long: position.coords.longitude });
             },
             (error) => {
-                console.error("Error getting location: ", error.message);
-                alert("Please enable location services to check for duplicates.");
+                console.log("Error caught:", error.code); // Step 3: See if it fails
+                reject(error);
+            },
+            { 
+                enableHighAccuracy: false, // Less demanding
+                timeout: 5000,             // Stop waiting after 5 seconds
+                maximumAge: Infinity       // Use any cached location available
             }
         );
-    } else {
-        alert("Geolocation is not supported by this browser.");
-    }
+    });
 }
 
 
@@ -61,10 +61,10 @@ function getLocation() {
 async function submitReport() {
     const location = document.getElementById('repLocation').value.trim();
     const category = document.getElementById('repCategory').value;
-    const date     = document.getElementById('repDate').value;
-    const desc     = document.getElementById('repDesc').value.trim();
-    const imgFile  = document.getElementById('repImage').files[0];
-    const lat, long = getLocation();
+    const date = document.getElementById('repDate').value;
+    const desc = document.getElementById('repDesc').value.trim();
+    const imgFile = document.getElementById('repImage').files[0];
+    const { lat, long } = await getLocation();
     if (!location) {
         showToast('Please fill in Location.', '#f87171');
         return;
@@ -83,9 +83,9 @@ async function submitReport() {
     }
 
     const formData = new FormData();
-    formData.append('location',    location);
-    formData.append('category',    category);
-    formData.append('date',        date);
+    formData.append('location', location);
+    formData.append('category', category);
+    formData.append('date', date);
     formData.append('description', desc);
     if (imgFile) formData.append('image', imgFile);
     formData.append('latitude', lat);
@@ -94,21 +94,26 @@ async function submitReport() {
     const API = getApi();
 
     try {
-        const res  = await fetch(API + '/report', { method: 'POST', body: formData });
+        console.log('Report ki request bhej raha hu');
+        if (!lat || !long) {
+            showToast('Unable to get location. Please allow location access and try again.', '#f87171');
+            return;
+        }
+        const res = await fetch(API + '/report', { method: 'POST', body: formData });
         const data = await res.json();
 
         console.log(data); // Debug log to check response from model
-        if(data.success == false || data.label != 'Pothole') {
+        if (data.success == false || data.label != 'Pothole') {
             showToast('Submission failed: ' + (data.error || 'Unknown error'), '#f87171');
-        }else if(data.success == true && data.nearby_duplicates.length > 0){
+        } else if (data.success == true && data.nearby_duplicates.length > 0) {
             // Call a function to confirm with the user if they want to submit anyway after showing them the nearby duplicates
-        }else if (data.success && data.label == 'Pothole') {
+        } else if (data.success && data.label == 'Pothole') {
             showToast('Report submitted successfully! 🎉');
             document.getElementById('repLocation').value = '';
             document.getElementById('repCategory').value = '';
-            document.getElementById('repDate').value     = '';
-            document.getElementById('repDesc').value     = '';
-            removeImage(); 
+            document.getElementById('repDate').value = '';
+            document.getElementById('repDesc').value = '';
+            removeImage();
         } else {
             showToast('Submission failed: ' + (data.error || 'Unknown error'), '#f87171');
         }
