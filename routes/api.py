@@ -280,6 +280,42 @@ def list_admins():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
     
+@api_bp.route('/manage-admins/demote/<uuid:admin_id>', methods=['POST'])
+def demote_admin(admin_id):
+    # 1. Security check
+    err = _require_super_admin()
+    if err:
+        return err
+
+    try:
+        # 2. Get the Super Admin's ID from the session
+        super_admin_id = str(session.get('UID'))
+
+        # 3. Inform PostgreSQL of the Super Admin ID for the audit trigger
+        # We use 'app.current_superadmin_id' because that's what Trigger 3 looks for
+        db.session.execute(
+            text("SELECT set_config('app.current_superadmin_id', :sid, true)"),
+            {'sid': super_admin_id}
+        )
+
+        # 4. Find the target admin and update their role
+        user = User.query.filter_by(UserID=admin_id).first()
+        
+        if not user:
+            return jsonify({'success': False, 'error': 'Target admin not found'}), 404
+
+        # Changing the role triggers the 'AFTER UPDATE' logic in Trigger 3
+        user.Role = 'User'
+
+        # 5. Commit everything in one transaction
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': f'User {user.Name} demoted to User status.'})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)}), 500
+    
 @api_bp.route('/inspection/override/<uuid:report_id>', methods=['POST'])
 def override_inspection(report_id):
     err = _require_super_admin()
