@@ -27,10 +27,14 @@ function buildCard(r, maxL) {
   const desc = r.Description || '';
 
   /* Image */
-  const imgSection = r.ImageURL
-    ? `<div class="card-img"><img src="${r.ImageURL}" alt="Issue photo"/></div>`
-    : `<div class="card-img"><i class="fas fa-image"></i></div>`;
+const BASE_URL = "http://127.0.0.1:5000";
 
+// This takes "/home/user/project/uploads/5.jpg" and turns it into "5.jpg"
+const filename = r.ImageURL ? r.ImageURL.split('/').pop() : null;
+
+const imgSection = filename
+    ? `<div class="card-img"><img src="${BASE_URL}/uploads/${filename}" alt="Issue photo"/></div>`
+    : `<div class="card-img"><i class="fas fa-image"></i></div>`;
   /* Hot badge */
   const hotBadge = isHot
     ? `<div class="hot-badge"><i class="fas fa-fire"></i> Trending</div>`
@@ -186,10 +190,10 @@ async function setStatus(newStatus) {
   // 2. Optimistic UI Update
   const oldStatus = report.status; // Save old status in case we need to roll back
   report.status = newStatus;
-  
+
   // Update the UI immediately
-  applyFilters(); 
-  
+  applyFilters();
+
   // Update the badge in the drawer if it exists
   const drawerBadge = document.getElementById('drawerBadge');
   if (drawerBadge) drawerBadge.innerText = newStatus;
@@ -199,14 +203,14 @@ async function setStatus(newStatus) {
 
   // 3. PATCH to backend
   try {
-    await fetch(`${API}/report/${activeModalId}/status`, {
+    const response = await fetch(`${API}/report/${activeModalId}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus })
     });
 
     if (!response.ok) {
-        throw new Error('Server update failed');
+      throw new Error('Server update failed');
     }
 
     // Success! Now we can safely clear the active ID
@@ -226,7 +230,7 @@ async function loadAllReports() {
     console.log('Fetching all reports from backend...');
     const res = await fetch(API + '/reports');
     const data = await res.json();
-    allReports = data.reports || [];
+    allReports = (data.reports || []).filter(r => r.Status != 'Resolved');
     console.log('All Reports loaded:', allReports.length);
     renderGrid(allReports);
   } catch (e) {
