@@ -1,6 +1,16 @@
 /* dash.js */
 
 function issueHtml(r) {
+    // 1. Define your backend base URL
+    const BASE_URL = "http://127.0.0.1:5000";
+
+    // 2. Clean the URL: if it's a full path, get just the filename. 
+    // If it's already just a filename, this still works.
+    const filename = r.image_url ? r.image_url.split('/').pop() : null;
+
+    // 3. Construct the full web-accessible URL
+    const fullImageUrl = filename ? `${BASE_URL}/uploads/${filename}` : null;
+
     return `
     <div class="issue-info">
       <div class="issue-field"><span class="label">Location:</span> ${r.location || '—'}</div>
@@ -9,8 +19,8 @@ function issueHtml(r) {
       <div class="issue-field"><span class="label">Date:</span> ${r.date || '—'}</div>
     </div>
     <div class="issue-img">
-      ${r.image_url
-            ? `<img src="${r.image_url}" alt="Issue photo"/>`
+      ${fullImageUrl
+            ? `<img src="${fullImageUrl}" alt="Issue photo"/>`
             : `<i class="fas fa-image" style="font-size:22px;opacity:.3"></i>`}
     </div>`;
 }

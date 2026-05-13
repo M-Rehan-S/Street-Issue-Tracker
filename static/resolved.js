@@ -7,8 +7,13 @@ const API = getApi();
 function buildCard(r) {
     const desc = r.Description || '';
 
-    const imgHtml = r.ImageUrl
-        ? `<img src="${r.ImageUrl}" class="card-img-top-custom" alt="Issue photo"/>`
+    const BASE_URL = "http://127.0.0.1:5000";
+
+    // This takes "/home/user/project/uploads/5.jpg" and turns it into "5.jpg"
+    const filename = r.ImageURL ? r.ImageURL.split('/').pop() : null;
+
+    const imgHtml = filename
+        ? `<img src="${BASE_URL}/uploads/${filename}" class="card-img-top-custom" alt="Issue photo"/>`
         : `<div class="card-img-placeholder"><i class="fas fa-image fa-2x" style="opacity:.2"></i></div>`;
 
     /* Check if proof exists locally */
