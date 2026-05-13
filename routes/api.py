@@ -108,6 +108,7 @@ def report():
         
         filename = secure_filename(image.filename)
         # This is just a harcocde image url for testing
+        image.seek(0)
         filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
         image.save(filepath)
         image_url = f"{filepath}" 
