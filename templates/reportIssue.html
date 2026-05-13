@@ -54,7 +54,6 @@
                 <div class="form-group full">
                     <label>Upload Photo</label>
 
-                    <!-- Upload area — hidden once image is chosen -->
                     <div class="upload-area" id="uploadArea"
                          onclick="document.getElementById('repImage').click()">
                         <i class="fas fa-cloud-arrow-up"></i>
@@ -65,7 +64,6 @@
                     <input type="file" id="repImage" accept="image/*" style="display:none"
                            onchange="handleUpload(this)" />
 
-                    <!-- Thumbnail pill — shown after image chosen, hidden by default -->
                     <div id="imagePreview" class="image-preview" style="display:none">
                         <img id="previewImg" src="" alt="Preview" />
                         <div>
@@ -91,6 +89,48 @@
         </div>
 
     </main>
+
+    <!-- ══════════════════════════════════════════════════════
+         DUPLICATE REPORTS POPUP
+         Only shown when backend finds nearby similar reports.
+    ════════════════════════════════════════════════════════ -->
+    <div class="dup-overlay" id="dupPopupOverlay" onclick="closeDupPopup(event)">
+        <div class="dup-modal">
+
+            <!-- Header -->
+            <div class="dup-modal-header">
+                <div class="dup-modal-icon">
+                    <i class="fas fa-triangle-exclamation"></i>
+                </div>
+                <div class="dup-modal-title-wrap">
+                    <div class="dup-modal-title">Similar Issue Already Reported</div>
+                    <div class="dup-modal-subtitle">
+                        A similar problem exists nearby. You can upvote it instead of creating a duplicate.
+                    </div>
+                </div>
+                <span class="dup-modal-count" id="dupPopupCount">0 found</span>
+                <button class="dup-close-btn" onclick="closeDupPopupDirect()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Scrollable list of nearby duplicate report cards -->
+            <div class="dup-cards-scroll" id="dupCardsContainer">
+                <!-- Cards injected by reports.js -->
+            </div>
+
+            <!-- Footer -->
+            <div class="dup-modal-footer">
+                <p>If this is a different issue, close this and your report will still be submitted.</p>
+                <button class="dup-close-footer-btn" onclick="closeDupPopupDirect()">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+    <!-- ══════════════════════════════════════════════════════ -->
+
     <div id="toast"></div>
     <script src="{{ url_for('static', filename='sidebar-template.js') }}"></script>
     <script src="{{ url_for('static', filename='sidebar.js') }}"></script>
