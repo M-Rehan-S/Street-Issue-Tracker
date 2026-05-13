@@ -9,17 +9,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(100vh - 60px);
-    background-color: #f5f5f5;
-    padding: 20px;
+    min-height: 100vh;
+    padding: 80px 20px 20px;   /* 80px top = clears fixed navbar */
 }
 
 .container {
     position: relative;
     width: 100%;
     max-width: 900px;
-    height: 500px;
+    height: 520px;          /* login form */
     perspective: 1000px;
+}
+
+/* signup form has 5 fields — give it extra height */
+.auth-container.sign-up-mode {
+    height: 580px;
 }
 
 .auth-container {
@@ -110,7 +114,7 @@ h2 {
 
 .input-field {
     width: 100%;
-    margin: 10px 0;
+    margin: 7px 0;
     position: relative;
     display: flex;
     align-items: center;
@@ -150,8 +154,8 @@ h2 {
     box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.1);
 }
 
-.input-field input:focus+i {
-    color: #2c3e50;
+.input-field:focus-within i {
+    color: #fa7516;
     transform: scale(1.1);
 }
 
@@ -217,6 +221,8 @@ h2 {
 .content h1 {
     font-size: clamp(1.8rem, 5vw, 2.2rem);
     margin-bottom: 15px;
+    line-height: 1.35;
+    letter-spacing: 0.02em;
     transform: translateY(-20px);
     opacity: 0;
     animation: slideDown 0.5s ease forwards;
@@ -277,54 +283,104 @@ h2 {
 }
 
 @media screen and (max-width: 768px) {
+    /* container becomes a stacking layout on mobile */
     .container {
         height: auto;
-        min-height: 800px;
+        min-height: unset;
     }
 
     .auth-container {
-        height: 100%;
+        position: relative;   /* take normal flow */
+        height: auto;
+        display: flex;
+        flex-direction: column;
     }
 
-    .forms-container {
-        width: 100%;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-
-    .auth-container.sign-up-mode .forms-container {
-        transform: translateY(0);
-    }
-
+    /* dark panel sits on top, shrinks to content */
     .panels-container {
+        position: relative;
         width: 100%;
-        height: 50%;
-        top: 0;
-        transform: translateY(0);
+        height: auto;
+        padding: 28px 20px 22px;
+        transform: none !important;
+        transition: none;
     }
 
+    /* sign-up-mode: hide panel (panel slides away) */
     .auth-container.sign-up-mode .panels-container {
-        transform: translateY(-100%);
+        display: none;
     }
 
     .panel {
-        flex-direction: row;
-        justify-content: center;
+        flex-direction: column;
         align-items: center;
-        padding: 20px 10px;
+        justify-content: center;
+        padding: 0;
     }
 
     .content {
-        padding: 0 20px;
         text-align: center;
+        max-width: 100%;
+        padding: 0 10px;
+    }
+
+    /* forms take full width below panel */
+    .forms-container {
+        position: relative;
+        width: 100%;
+        left: 0;
+        top: 0;
+        transform: none !important;
+        transition: none;
+        padding: 28px 20px 32px;
+        min-height: 0;
     }
 
     .signin-signup {
-        top: 75%;
+        position: relative;
+        top: 0;
+        left: 0;
+        transform: none;
+        width: 100%;
+        padding: 0;
     }
 
-    .auth-container.sign-up-mode .signin-signup {
-        top: 25%;
+    form {
+        position: relative;
+        max-width: 100%;
+    }
+
+    /* show only the active form */
+    .sign-in-form {
+        display: flex;
+    }
+
+    .sign-up-form {
+        display: none;
+        transform: none !important;
+    }
+
+    .auth-container.sign-up-mode .sign-in-form {
+        display: none;
+        transform: none !important;
+    }
+
+    .auth-container.sign-up-mode .sign-up-form {
+        display: flex;
+        opacity: 1;
+        transform: none !important;
+    }
+}
+
+/* Very small phones */
+@media screen and (max-width: 400px) {
+    .input-field input {
+        padding: 10px 10px 10px 38px;
+        font-size: 0.875rem;
+    }
+
+    .btn {
+        max-width: 130px;
+        height: 40px;
     }
 }
