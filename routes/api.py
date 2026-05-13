@@ -123,6 +123,35 @@ def report():
         return jsonify({'success': False, 'error': str(e)})
 
 
+@api_bp.route('/report/<int:report_id>/status', methods=['PATCH'])
+def update_report_status(report_id):
+    data = request.get_json()
+    
+    if not data or 'status' not in data:
+        return jsonify({"success": False, "error": "Missing status data"}), 400
+
+    new_status = data.get('status')
+
+    try:
+        report = Report.query.filter(Report.ReportID == report_id).first()
+        if not report:
+            return jsonify({'success': False, 'error': 'Report Not Found'})
+        report.Status = new_status
+        db.session.commit()
+        print(f"Updating Report {report_id} to {new_status}") 
+        
+        # 3. Return a success response
+        return jsonify({
+            "success": True, 
+            "message": f"Status updated to {new_status}"
+        }), 200
+            
+        
+    except Exception as e:
+        print(f"Database error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 # ------------------------------------------------------------------
 # Admin — role management
 # ------------------------------------------------------------------
@@ -202,7 +231,7 @@ def inspection_routes():
     if err:
         return err
     try:
-        uid = session.get('UID')
+        session.get('UID')
         reports = Report.query.filter(Report.Status == 'Reported', Report.AIConfidenceScore < 80).order_by(Report.CreatedAt.asc()).all()
 
     except Exception as e:
