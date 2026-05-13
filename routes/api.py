@@ -272,6 +272,7 @@ def inspection_routes():
 
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
+    
     return jsonify({'success': True, 'reports': [
         {
             'ReportID': r.ReportID,
@@ -338,6 +339,7 @@ def vote(report_id):
 
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
+    
 @api_bp.route('/vote/<uuid:report_id>', methods=['DELETE'])
 def remove_vote(report_id):
     err = _require_login()
