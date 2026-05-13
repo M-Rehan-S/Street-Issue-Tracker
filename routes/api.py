@@ -37,6 +37,7 @@ def _require_admin():
 
 @api_bp.route('/personal-details', methods=['POST'])
 def change():
+    print('Reached')
     err = _require_login()
     if err:
         return err
@@ -48,16 +49,18 @@ def change():
         phone    = data.get('phone', '').strip()
         email    = data.get('email', '').strip()
 
+        uid = session.get('UID')
+        user = User.query.filter_by(UserID = uid).first()
+
+
         if not any([username, password, phone, email]):
             return jsonify({'success': False, 'error': 'At least one field is required.'})
 
-        user_id     = session.get('UID')
-        user = User.query.get(user_id)
         if user:
-            if username and username != user.Username:
-                user.Username = username
+            if username and username != user.Name:
+                user.Name = username
             if password:
-                user.Password = password
+                user.PasswordHash = password
             if phone:
                 user.PhoneNumber = phone
             if email:
@@ -157,36 +160,6 @@ def update_report_status(report_id):
     except Exception as e:
         print(f"Database error: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
-
-
-@api_bp.route('/report/<int:report_id>/status', methods=['PATCH'])
-def update_report_status(report_id):
-    data = request.get_json()
-    
-    if not data or 'status' not in data:
-        return jsonify({"success": False, "error": "Missing status data"}), 400
-
-    new_status = data.get('status')
-
-    try:
-        report = Report.query.filter(Report.ReportID == report_id).first()
-        if not report:
-            return jsonify({'success': False, 'error': 'Report Not Found'})
-        report.Status = new_status
-        db.session.commit()
-        print(f"Updating Report {report_id} to {new_status}") 
-        
-        # 3. Return a success response
-        return jsonify({
-            "success": True, 
-            "message": f"Status updated to {new_status}"
-        }), 200
-            
-        
-    except Exception as e:
-        print(f"Database error: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
-
 
 # ------------------------------------------------------------------
 # Admin — role management
