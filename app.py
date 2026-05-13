@@ -5,7 +5,6 @@ from extensions import db, migrate, cors
 from models import report_audit_log, user, report, vote
 from routes import auth_bp, dashboard_bp, api_bp
 
-
 def create_app(config_class=Config) -> Flask:
     base_dir = os.path.abspath(os.path.dirname(__file__))
     app = Flask(__name__, template_folder=os.path.join(base_dir, 'templates'))

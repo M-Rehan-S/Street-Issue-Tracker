@@ -2,6 +2,8 @@ from flask import Blueprint, request, jsonify, session, current_app
 from extensions import db
 from services import get_ml_service, get_nearby_duplicates
 from models import User, Report, Vote
+from werkzeug.utils import secure_filename
+import os
 
 
 api_bp = Blueprint('api', __name__)
@@ -102,8 +104,12 @@ def report():
             return jsonify({'success': True, 'message': 'Similar issue reported nearby.', 'nearby_duplicates': near_reports})
 
         user_id = session.get('UID')
+        
+        filename = secure_filename(image.filename)
         # This is just a harcocde image url for testing
-        image_url = "https://imgs.search.brave.com/Ln-0KQCeMnmE61pjWLzpusWfQZzZH8R15sJXjVZn3hg/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJhY2Nlc3Mu/Y29tL2Z1bGwvODQx/MjU4Ny5qcGc"
+        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+        image.save(filepath)
+        image_url = f"/{filepath}" 
         new_report = Report(SubmitterID=user_id, Category=result.get('label'),
                             AIConfidenceScore=result.get('confidence'),
                             Status=('Reported' if result.get('confidence')<80 else 'Inspected'),
