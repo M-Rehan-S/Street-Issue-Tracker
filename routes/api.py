@@ -37,6 +37,7 @@ def _require_admin():
 
 @api_bp.route('/personal-details', methods=['POST'])
 def change():
+    print('Reached')
     err = _require_login()
     if err:
         return err
@@ -48,16 +49,18 @@ def change():
         phone    = data.get('phone', '').strip()
         email    = data.get('email', '').strip()
 
+        uid = session.get('UID')
+        user = User.query.filter_by(UserID = uid).first()
+
+
         if not any([username, password, phone, email]):
             return jsonify({'success': False, 'error': 'At least one field is required.'})
 
-        user_id     = session.get('UID')
-        user = User.query.get(user_id)
         if user:
-            if username and username != user.Username:
-                user.Username = username
+            if username and username != user.Name:
+                user.Name = username
             if password:
-                user.Password = password
+                user.PasswordHash = password
             if phone:
                 user.PhoneNumber = phone
             if email:
@@ -244,6 +247,7 @@ def inspection_routes():
 
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
+    
     return jsonify({'success': True, 'reports': [
         {
             'ReportID': r.ReportID,
@@ -278,6 +282,30 @@ def list_admins():
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
     
+@api_bp.route('/manage-admins/demote/<uuid:admin_id>', methods=['POST'])
+def demote_admin(admin_id):
+    err = _require_super_admin()
+    if err:
+        return err
+    try:
+        # FIX 1: .all() returns a list — use .first() directly on the query
+        user = User.query.filter(User.UserID == admin_id).first()
+
+        if not user:
+            return jsonify({'success': False, 'error': 'User not found.'})
+
+        # FIX 2: use the correct column name with capital R, matching your model
+        # user.role would silently set a Python attribute and save nothing to DB
+        user.Role = 'Citizen'
+
+        db.session.commit()
+        return jsonify({'success': True, 'message': f'Admin {user.Name} demoted to Citizen.'})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)})
+    
+        
 @api_bp.route('/inspection/override/<uuid:report_id>', methods=['POST'])
 def override_inspection(report_id):
     err = _require_super_admin()
@@ -310,6 +338,7 @@ def vote(report_id):
 
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
+    
 @api_bp.route('/vote/<uuid:report_id>', methods=['DELETE'])
 def remove_vote(report_id):
     err = _require_login()

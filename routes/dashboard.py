@@ -28,45 +28,56 @@ def load_dashboard():
     if redir:
         return redir
     try:
-        reports = []
-        reports = Report.query.filter_by(SubmitterID=session.get('UID'), Category = 'Pothole').order_by(Report.CreatedAt.desc()).all()
-        recent_report = None
-        if session.get('role', '').lower() == 'Citizen'.lower():
-            recent_report = Report.query.filter_by(SubmitterID=session.get('UID')).order_by(Report.CreatedAt.desc()).first()
+        uid = session.get('UID')
+        role = session.get('role', '').lower()
+
+        user_reports = Report.query.filter_by(SubmitterID=uid).order_by(Report.CreatedAt.desc()).all()
+
+        return_reports = [{
+            'location': r.Location,
+            'category': r.Category,
+            'status':   r.Status,
+            'date':     r.CreatedAt.isoformat(sep=' ', timespec='minutes'),
+            'image_url': r.ImageURL
+        } for r in user_reports]
+
+        total   = Report.query.count()
+        fixed   = Report.query.filter_by(Status='Resolved').count()
+        pending = Report.query.filter_by(Status='InProgress').count()
+        open_c  = Report.query.filter_by(Status='Reported').count()
+
+        if role == 'citizen':
+            recent_report = Report.query.filter_by(SubmitterID=uid).order_by(Report.CreatedAt.desc()).first()
         else:
             recent_report = Report.query.order_by(Report.CreatedAt.desc()).first()
-        return_reports = [{
-            'location': report.Location,
-            'category': report.Category,
-            'status': report.Status,
-            'date': report.CreatedAt.isoformat(sep=' ', timespec='minutes'),
-            'image_url': report.ImageURL
-        } for report in reports]
-        total = Report.query.count()
-        trending = Report.query.filter(Report.VoteCount > 0).order_by(Report.VoteCount.desc()).limit(7).all()
+
+        trending_qs = Report.query.filter(Report.VoteCount > 0).order_by(Report.VoteCount.desc()).limit(7).all()
         trending_reports = [{
-            'location': trending.Location,
-            'category': trending.Category,
-            'status': trending.Status,
-            'date': trending.CreatedAt.isoformat(sep=' ', timespec='minutes'),
-            'image_url': trending.ImageURL
-        } for trending in trending]
-        return jsonify({'success': True, 'your_reports': return_reports, 'stats' : {
-            'total': total,
-            'fixed': len([r for r in return_reports if r['status'] == 'Resolved']),
-            'pending': len([r for r in return_reports if r['status'] == 'InProgress']),
-            'open' : len([r for r in return_reports if r['status'] == 'Reported'])
-        },
-        'recent_report': {
-            'location': recent_report.Location,
-            'category': recent_report.Category,
-            'status': recent_report.Status,
-            'date': recent_report.CreatedAt.isoformat(sep=' ', timespec='minutes'),
-            'image_url': recent_report.ImageURL
-        } if recent_report else None,
-        'most_faced' : trending_reports
-        }
-        )
+            'location':  tr.Location,
+            'category':  tr.Category,
+            'status':    tr.Status,
+            'date':      tr.CreatedAt.isoformat(sep=' ', timespec='minutes'),
+            'image_url': tr.ImageURL
+        } for tr in trending_qs]
+
+        return jsonify({
+            'success': True,
+            'your_reports': return_reports,
+            'stats': {
+                'total':   total,
+                'fixed':   fixed,    
+                'pending': pending,  
+                'open':    open_c    
+            },
+            'recent_report': {
+                'location':  recent_report.Location,
+                'category':  recent_report.Category,
+                'status':    recent_report.Status,
+                'date':      recent_report.CreatedAt.isoformat(sep=' ', timespec='minutes'),
+                'image_url': recent_report.ImageURL
+            } if recent_report else None,
+            'most_faced': trending_reports
+        })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
