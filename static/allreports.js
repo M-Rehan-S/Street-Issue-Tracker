@@ -141,7 +141,7 @@ function applyFilters() {
 
   let filtered = allReports;
   if (cat) filtered = filtered.filter(r => r.Category === cat);
-  if (stat) filtered = filtered.filter(r => (r.Status || 'Open') === stat);
+  if (stat) filtered = filtered.filter(r => (r.Status || 'Reported') === stat);
 
   renderGrid(filtered);
 }
@@ -157,6 +157,7 @@ function isPrivileged() {
   const role = (sidebar ? sidebar.dataset.role : 'citizen').toLowerCase();
   return role === 'admin' || role === 'superadmin';
 }
+
 /* ── Admin modal ── */
 function openModal(id, categoryName) {
   if (!isPrivileged()) return;
@@ -185,27 +186,27 @@ async function setStatus(newStatus) {
   // 2. Optimistic UI Update
   const oldStatus = report.status; // Save old status in case we need to roll back
   report.status = newStatus;
-
+  
   // Update the UI immediately
-  applyFilters();
-
+  applyFilters(); 
+  
   // Update the badge in the drawer if it exists
   const drawerBadge = document.getElementById('drawerBadge');
   if (drawerBadge) drawerBadge.innerText = newStatus;
 
   document.getElementById('statusModal').classList.remove('open');
-  showToast('Status updated to "${newStatus}"');
-  ``
+  showToast(`Status updated to "${newStatus}"`);
+
   // 3. PATCH to backend
   try {
-    const response = await fetch(API + '/report/' + currentId + '/status', {
+    await fetch(`${API}/report/${activeModalId}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus })
     });
 
     if (!response.ok) {
-      throw new Error('Server update failed');
+        throw new Error('Server update failed');
     }
 
     // Success! Now we can safely clear the active ID
@@ -219,7 +220,6 @@ async function setStatus(newStatus) {
     showToast("Failed to save to server. Reverting change.", "#f87171");
   }
 }
-
 /* ── Load from DB ── */
 async function loadAllReports() {
   try {
